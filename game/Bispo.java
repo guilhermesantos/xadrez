@@ -12,6 +12,7 @@ public class Bispo extends Peca {
 			carregarImagem();
 		} catch (IOException e) {
 			System.out.println("Erro ao carregar bispo.png");
+			System.out.println("asdasdasda");
 		}
 	}
 
