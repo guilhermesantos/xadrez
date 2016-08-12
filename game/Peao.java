@@ -8,6 +8,7 @@ import properties.Constantes;
 public class Peao extends Peca {
 	
 	public Peao(Cor cor) {
+		super.tipoPeca = TipoPeca.PEAO;
 		super.cor = cor;
 		try {
 			carregarImagem();

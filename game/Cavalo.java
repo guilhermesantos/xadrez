@@ -7,6 +7,7 @@ import properties.Constantes;
 public class Cavalo extends Peca {
 	
 	public Cavalo(Cor cor) {
+		super.tipoPeca = TipoPeca.CAVALO;
 		super.cor = cor;
 		try {
 			carregarImagem();

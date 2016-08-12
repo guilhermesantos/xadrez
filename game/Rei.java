@@ -7,6 +7,7 @@ import properties.Constantes;
 public class Rei extends Peca {
 	
 	public Rei(Cor cor) {
+		super.tipoPeca = TipoPeca.REI;
 		super.cor = cor;
 		try {
 			carregarImagem();
