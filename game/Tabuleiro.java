@@ -1,13 +1,20 @@
 package game;
 
 public class Tabuleiro {
-	Peca[][] casas;
+	private Peca[][] casas;
 	
-	public Tabuleiro() {
+	private static class TabuleiroSingletonHolder {
+		private static final Tabuleiro tabuleiro = new Tabuleiro();
+	}
+	
+	public static Tabuleiro getInstance() {
+		return TabuleiroSingletonHolder.tabuleiro;
+	}
+	private Tabuleiro() {
 		casas = new Peca[8][8];
 		reinicializaTabuleiro();
 	}
-	
+
 	public void reinicializaTabuleiro() {
 		for(int i = 0; i < 8; i++) {
 			casas[1][i] = new Peao(Cor.PRETO);
@@ -22,8 +29,8 @@ public class Tabuleiro {
 		
 		casas[0][0] = new Torre(Cor.PRETO);
 		casas[0][7] = new Torre(Cor.PRETO);
-		casas[7][0] = new Torre(Cor.BRANCO);
-		casas[7][7] = new Torre(Cor.BRANCO);
+		casas[2][3] = new Torre(Cor.PRETO);
+		casas[2][5] = new Torre(Cor.BRANCO);
 		
 		casas[0][1] = new Cavalo(Cor.PRETO);
 		casas[0][6] = new Cavalo(Cor.PRETO);
@@ -39,14 +46,42 @@ public class Tabuleiro {
 		casas[7][3] = new Rainha(Cor.BRANCO);
 		
 		casas[0][4] = new Rei(Cor.PRETO);
-		casas[7][4] = new Rei(Cor.BRANCO);
+		casas[2][7] = new Rei(Cor.BRANCO);
 	}
 	
 	public boolean casaEstaVazia(int linha, int coluna) {
 		return casas[linha][coluna] == null ? true : false;
 	}
+	
+	public boolean casaEstaForaDoTabuleiro(int linha, int coluna) {
+		if((linha < 0 || linha > 7) || (coluna < 0 || coluna > 7)) {
+			System.out.println("A CASA TA FORA DO TABULEIRO");
+		}
+		return (linha < 0 || linha > 7) || (coluna < 0 || coluna > 7);
+	}
 		
 	public Peca getPeca(int linha, int coluna) {
 		return casas[linha][coluna];
+	}
+	
+	public void removePeca(int linha, int coluna) {
+		casas[linha][coluna] = null;
+	}
+	
+	public void colocaPeca(int linha, int coluna, Peca peca) {
+		casas[linha][coluna] = peca;
+	}
+	
+	public void exibeTabuleiroNoConsole() {
+		for(int i=0; i < 8; i++) {
+			for(int j=0; j<8; j++) {
+				if(casaEstaVazia(i, j)) {
+					System.out.print("[0]");
+				} else {
+					System.out.print("[1]");
+				}
+			}
+			System.out.println("");
+		}
 	}
 }

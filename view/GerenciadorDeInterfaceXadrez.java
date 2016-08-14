@@ -7,8 +7,12 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -20,11 +24,11 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 	
 	private static final long serialVersionUID = -4661370508920536135L;
 
-	Xadrez jogo;
+	private Xadrez jogo;
 	private XadrezMouseListener listener;
-	private Tabuleiro tabuleiro;
 	private JPanel[][] representacaoTabuleiro;
-	
+	private List<Point> casasDestacadas;
+
 	public GerenciadorDeInterfaceXadrez() {
 		super.setLayout(new GridLayout(8, 8));
 		
@@ -35,46 +39,87 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 		jogo = new Xadrez();
 		jogo.iniciaNovoJogo();
 
-		tabuleiro = jogo.getTabuleiro();
-	
-		criaRepresentacaoTabuleiro();
-		atualizaDesenhoDasPecasNoTabuleiro();
+		criaNovoTabuleiro();
+		atualizaPecasNoTabuleiro();
+		limpaCasasDestacadas();
 	}
 	
-	private void criaRepresentacaoTabuleiro() {
+	private void criaNovoTabuleiro() {
 		representacaoTabuleiro = new JPanel[8][8];
 		boolean corBranca = true;
 
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				representacaoTabuleiro[i][j] = new JPanel();
-				JLabel imagem = new JLabel();
 				if(corBranca) {
 					representacaoTabuleiro[i][j].setBackground(Color.WHITE);
 				} else {
 					representacaoTabuleiro[i][j].setBackground(Color.GRAY);
 				}
-				representacaoTabuleiro[i][j].add(imagem);
 				this.add(representacaoTabuleiro[i][j]);
+
+				JLabel iconeDaPeca = new JLabel();
+				representacaoTabuleiro[i][j].add(iconeDaPeca);
 				corBranca = !corBranca;
 			}
 			corBranca = !corBranca;
 		}
 	}
 	
-	private void atualizaDesenhoDasPecasNoTabuleiro() {
+	private void atualizaPecasNoTabuleiro() {
+		Tabuleiro.getInstance().exibeTabuleiroNoConsole();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
-				JLabel imagemPeca = (JLabel)representacaoTabuleiro[i][j].getComponent(0);
+				JLabel containerDoIconeDaPeca = (JLabel)representacaoTabuleiro[i][j].getComponent(0);
 				
-				if(tabuleiro.casaEstaVazia(i, j)) {
-					imagemPeca.setIcon(null);
+				if(Tabuleiro.getInstance().casaEstaVazia(i, j)) {
+					containerDoIconeDaPeca.setIcon(null);
 				} else {
-					imagemPeca = new JLabel(tabuleiro.getPeca(i, j).getImagem());
-					representacaoTabuleiro[i][j].add(imagemPeca);
+					containerDoIconeDaPeca.setIcon(Tabuleiro.getInstance().getPeca(i, j).getImagem());
 				}
 			}
 		}
+		super.paintAll(super.getGraphics());
+	}
+	
+	private void destacaMovimentosValidos(List<Point> movimentosValidos) {
+		limpaCasasDestacadas(); 
+		
+		for(Point movimentoValido : movimentosValidos) {
+			representacaoTabuleiro[movimentoValido.x][movimentoValido.y].setBackground(Color.RED);
+		}
+		casasDestacadas.addAll(movimentosValidos);
+	}
+
+	private void limpaCasasDestacadas() {
+		if(casasDestacadas != null) {
+			if(!casasDestacadas.isEmpty()) {
+				for(Point casaDestacada : casasDestacadas) {
+					if(casaDestacada.x % 2 == 0) {
+						if(casaDestacada.y % 2 == 0) {
+							pintaFundoDeBranco(casaDestacada.x, casaDestacada.y);
+						} else {
+							pintaFundoDePreto(casaDestacada.x, casaDestacada.y);
+						}
+					} else {
+						if(casaDestacada.y % 2 == 0) {
+							pintaFundoDePreto(casaDestacada.x, casaDestacada.y);
+						} else {
+							pintaFundoDeBranco(casaDestacada.x, casaDestacada.y);
+						}
+					}
+				}
+			}
+		}
+		casasDestacadas = new ArrayList<Point>();
+	}
+
+	private void pintaFundoDePreto(int linha, int coluna) {
+		representacaoTabuleiro[linha][coluna].setBackground(Color.GRAY);
+	}
+
+	private void pintaFundoDeBranco(int linha, int coluna) {
+		representacaoTabuleiro[linha][coluna].setBackground(Color.WHITE);
 	}
 	
 	private Point converteCoordenadasEmCasaDoTabuleiro(MouseEvent e) {
@@ -82,17 +127,12 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 
 		int xExtremoEsquerdo = compClicado.getX();
 		int yExtremoEsquerdo = compClicado.getY();
-		System.out.println("x e y do extremo esquerdo: " + xExtremoEsquerdo + " " + yExtremoEsquerdo);
 	
 		int larguraComponente = compClicado.getWidth();
 		int alturaComponente = compClicado.getHeight();
-		System.out.println("Largura e altura do componente: " + larguraComponente + " " + alturaComponente);
 		
 		int xPeca = (int) Math.floor(yExtremoEsquerdo/alturaComponente);
-		System.out.println("Numero horizontal da casa: " + xPeca);
-		
 		int yPeca = (int) Math.floor(xExtremoEsquerdo/larguraComponente);
-		System.out.println("Numero vertical da casa: " + yPeca);
 		
 		Point coordenadasPecaSelecionada = new Point(xPeca, yPeca);
 		return coordenadasPecaSelecionada;
@@ -112,18 +152,26 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			Point coordenadasCasaSelecionada = converteCoordenadasEmCasaDoTabuleiro(e);
-			int xCasa = (int)coordenadasCasaSelecionada.getX();
-			int yCasa = (int)coordenadasCasaSelecionada.getY();
+			Point casaSelecionada = converteCoordenadasEmCasaDoTabuleiro(e);
+			int linhaCasaSelecionada = casaSelecionada.x;
+			int colunaCasaSelecionada = casaSelecionada.y;
 			
-			try {
-				List<Point> movimentosValidos = jogo.selecionaPeca(xCasa, yCasa);
-				representacaoTabuleiro[xCasa][yCasa].setBackground(Color.RED);
-				for(Point movimento : movimentosValidos) {
-					representacaoTabuleiro[(int) movimento.getX()][(int) movimento.getY()].setBackground(Color.BLUE);
+			if(casasDestacadas.contains(casaSelecionada)) {
+				jogo.movePeca(jogo.getPosicaoUltimaPecaSelecionada().x, 
+						jogo.getPosicaoUltimaPecaSelecionada().y, linhaCasaSelecionada, colunaCasaSelecionada);
+				atualizaPecasNoTabuleiro();
+				limpaCasasDestacadas();
+			} else {
+				//Clicou em outra peca ou clicou no meio do nada
+				try {
+					//Clicou em outra peca
+					List<Point> movimentosValidos = jogo.selecionaPeca(linhaCasaSelecionada, colunaCasaSelecionada);
+					destacaMovimentosValidos(movimentosValidos);
+
+				} catch (MovimentoInvalidoException e1) {
+					//Clicou no meio do nada
+					System.out.println("Movimento invalido!");
 				}
-			} catch (MovimentoInvalidoException e1) {
-				System.out.println("Movimento invalido!");
 			}
 		}
 
@@ -134,17 +182,14 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			System.out.println("soltou o mouse");
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			System.out.println("mouse entrou");
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			System.out.println("mouse saiu");
 		}
 	}
 }

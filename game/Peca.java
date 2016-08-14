@@ -3,6 +3,7 @@ package game;
 import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -12,8 +13,6 @@ public abstract class Peca {
 	
 	protected ImageIcon imagem;
 
-	protected TipoPeca tipoPeca;
-	
 	public Point posicao;
 	
 	public Cor getCor() {
@@ -31,10 +30,13 @@ public abstract class Peca {
 	public ImageIcon getImagem() {
 		return imagem;
 	}
-
-	public TipoPeca getTipoPeca() {
-		return tipoPeca;
+	
+	//Gambiarra. Arrumar
+	public void movePeca() {
+		
 	}
+	
+	public abstract List<Point> getMovimentosValidos(int linha, int coluna);
 	
 	protected abstract String getEnderecoImagem();
 	
