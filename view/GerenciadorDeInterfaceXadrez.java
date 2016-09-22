@@ -4,23 +4,26 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import exceptions.MovimentoInvalidoException;
+import game.EstadoJogo;
 import game.Tabuleiro;
 import game.Xadrez;
 
-public class GerenciadorDeInterfaceXadrez extends JPanel {
+public class GerenciadorDeInterfaceXadrez extends JPanel implements Observer {
 	
 	private static final long serialVersionUID = -4661370508920536135L;
 
@@ -28,20 +31,19 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 	private XadrezMouseListener listener;
 	private JPanel[][] representacaoTabuleiro;
 	private List<Point> casasDestacadas;
-
+	
 	public GerenciadorDeInterfaceXadrez() {
 		super.setLayout(new GridLayout(8, 8));
-		
 		listener = new XadrezMouseListener();
 		super.addMouseListener(listener);
 		super.addMouseMotionListener(listener);
-
-		jogo = new Xadrez();
-		jogo.iniciaNovoJogo();
+		
+		jogo = new Xadrez(this);
 
 		criaNovoTabuleiro();
 		atualizaPecasNoTabuleiro();
-		limpaCasasDestacadas();
+		//Gambiarra. arrumar
+		//limpaCasasDestacadasSeHouver();
 	}
 	
 	private void criaNovoTabuleiro() {
@@ -64,6 +66,7 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 			}
 			corBranca = !corBranca;
 		}
+
 	}
 	
 	private void atualizaPecasNoTabuleiro() {
@@ -80,10 +83,12 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 			}
 		}
 		super.paintAll(super.getGraphics());
+		//Gambiarra. arrumar
+		limpaCasasDestacadasSeHouver();
 	}
 	
 	private void destacaMovimentosValidos(List<Point> movimentosValidos) {
-		limpaCasasDestacadas(); 
+		limpaCasasDestacadasSeHouver(); 
 		
 		for(Point movimentoValido : movimentosValidos) {
 			representacaoTabuleiro[movimentoValido.x][movimentoValido.y].setBackground(Color.RED);
@@ -91,9 +96,8 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 		casasDestacadas.addAll(movimentosValidos);
 	}
 
-	private void limpaCasasDestacadas() {
-		if(casasDestacadas != null) {
-			if(!casasDestacadas.isEmpty()) {
+	private void limpaCasasDestacadasSeHouver() {
+		if(casasDestacadas != null && !casasDestacadas.isEmpty()) {
 				for(Point casaDestacada : casasDestacadas) {
 					if(casaDestacada.x % 2 == 0) {
 						if(casaDestacada.y % 2 == 0) {
@@ -109,7 +113,6 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 						}
 					}
 				}
-			}
 		}
 		casasDestacadas = new ArrayList<Point>();
 	}
@@ -138,11 +141,38 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 		return coordenadasPecaSelecionada;
 	}
 	
+	@Override
+	public void update(Observable o, Object arg) {
+		FimDeJogoDialog dialog = new FimDeJogoDialog
+				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
+
+		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
+			dialog.setText("Jogador branco venceu!");
+			System.out.println("Jogador branco venceu!");
+		} else {
+			dialog.setText("Jogador preto venceu!");
+			System.out.println("Jogador preto venceu!");
+		}
+		
+		dialog.getButton().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jogo.iniciaNovoJogo();
+				atualizaPecasNoTabuleiro();
+				//limpaCasasDestacadasSeHouver();
+				System.out.println("Action performed!");
+				dialog.dispose();
+			}
+			
+		});
+		dialog.setVisible(true);
+	}
+	
 	private class XadrezMouseListener implements MouseListener, MouseMotionListener {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			System.out.println("mouse arrastado");
 		}
 
 		@Override
@@ -160,10 +190,12 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 				jogo.movePeca(jogo.getPosicaoUltimaPecaSelecionada().x, 
 						jogo.getPosicaoUltimaPecaSelecionada().y, linhaCasaSelecionada, colunaCasaSelecionada);
 				atualizaPecasNoTabuleiro();
-				limpaCasasDestacadas();
+				//Gambiarra. arrumar
+				//limpaCasasDestacadasSeHouver();
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {
+					System.out.println("Selecionando nova peca");
 					//Clicou em outra peca
 					List<Point> movimentosValidos = jogo.selecionaPeca(linhaCasaSelecionada, colunaCasaSelecionada);
 					destacaMovimentosValidos(movimentosValidos);
@@ -192,4 +224,5 @@ public class GerenciadorDeInterfaceXadrez extends JPanel {
 		public void mouseExited(MouseEvent e) {
 		}
 	}
+
 }

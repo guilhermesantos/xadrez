@@ -1,7 +1,7 @@
 package runnable;
 
-import view.Janela;
 import properties.Constantes;
+import view.Janela;
 
 public class Main {
 	

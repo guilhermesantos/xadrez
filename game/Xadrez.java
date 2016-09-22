@@ -2,10 +2,12 @@ package game;
 
 import java.awt.Point;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import exceptions.MovimentoInvalidoException;
 
-public class Xadrez {
+public class Xadrez extends Observable {
 
 	private EstadoJogo estadoJogo;
 
@@ -21,19 +23,16 @@ public class Xadrez {
 		return pecaSelecionada;
 	}
 
-	public Xadrez() {
+	public Xadrez(Observer observer) {
+		this.addObserver(observer);
 		iniciaNovoJogo();
 	}
 
 	public void iniciaNovoJogo() {
-		estadoJogo = EstadoJogo.TURNO_PRETO;
+		Tabuleiro.getInstance().reinicializaTabuleiro();
+		estadoJogo = EstadoJogo.TURNO_BRANCO;
 		pecaSelecionada = null;
 		posicaoUltimaPecaSelecionada = null;
-	}
-
-	public void reiniciaJogo() {
-		Tabuleiro.getInstance().reinicializaTabuleiro();
-		estadoJogo = estadoJogo.TURNO_BRANCO;
 	}
 
 	public List<Point> selecionaPeca(int linha, int coluna) throws MovimentoInvalidoException {
@@ -69,10 +68,21 @@ public class Xadrez {
 	public void movePeca(int linhaOrigem, int colunaOrigem, 
 			int linhaDestino, int colunaDestino) {
 		Peca pecaDeslocada = Tabuleiro.getInstance().getPeca(linhaOrigem, colunaOrigem);
+		boolean capturouRei = false;
+		
+		if(!Tabuleiro.getInstance().casaEstaVazia(linhaDestino, colunaDestino)) {
+			if(Tabuleiro.getInstance().getPeca(linhaDestino, colunaDestino) instanceof Rei) {
+				setChanged();
+				notifyObservers(estadoJogo);
+			}
+		}
 		Tabuleiro.getInstance().removePeca(linhaOrigem, colunaOrigem);
 		Tabuleiro.getInstance().colocaPeca(linhaDestino, colunaDestino, pecaDeslocada);
-		//Gambiarra. Arrumar
-		pecaDeslocada.movePeca();
+
+		if(pecaDeslocada instanceof Peao) {
+			((Peao)pecaDeslocada).setPrimeiroMovimento(false);
+		}
+		
 		if(estadoJogo.equals(EstadoJogo.TURNO_BRANCO)) {
 			estadoJogo = EstadoJogo.TURNO_PRETO;
 		} else {

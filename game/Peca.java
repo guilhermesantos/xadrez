@@ -31,11 +31,6 @@ public abstract class Peca {
 		return imagem;
 	}
 	
-	//Gambiarra. Arrumar
-	public void movePeca() {
-		
-	}
-	
 	public abstract List<Point> getMovimentosValidos(int linha, int coluna);
 	
 	protected abstract String getEnderecoImagem();

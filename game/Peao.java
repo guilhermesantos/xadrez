@@ -20,6 +20,9 @@ public class Peao extends Peca {
 		}
 	}
 
+	public void setPrimeiroMovimento(boolean primeiroMovimento) {
+		this.primeiroMovimento = primeiroMovimento;
+	}
 	
 	@Override
 	protected String getEnderecoImagem() {
@@ -151,10 +154,4 @@ public class Peao extends Peca {
 		}
 		return false;
 	}
-	
-	@Override
-	public void movePeca() {
-		primeiroMovimento = false;
-	}
-	
 }
