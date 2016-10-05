@@ -55,7 +55,7 @@ public class Tabuleiro {
 	
 	public boolean casaEstaForaDoTabuleiro(int linha, int coluna) {
 		if((linha < 0 || linha > 7) || (coluna < 0 || coluna > 7)) {
-			System.out.println("A CASA TA FORA DO TABULEIRO");
+			//System.out.println("A CASA TA FORA DO TABULEIRO");
 		}
 		return (linha < 0 || linha > 7) || (coluna < 0 || coluna > 7);
 	}

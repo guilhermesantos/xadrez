@@ -161,7 +161,7 @@ public class GerenciadorDeInterfaceXadrez extends JPanel implements Observer {
 				jogo.iniciaNovoJogo();
 				atualizaPecasNoTabuleiro();
 				//limpaCasasDestacadasSeHouver();
-				System.out.println("Action performed!");
+				//System.out.println("Action performed!");
 				dialog.dispose();
 			}
 			
@@ -195,14 +195,14 @@ public class GerenciadorDeInterfaceXadrez extends JPanel implements Observer {
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {
-					System.out.println("Selecionando nova peca");
+					//System.out.println("Selecionando nova peca");
 					//Clicou em outra peca
 					List<Point> movimentosValidos = jogo.selecionaPeca(linhaCasaSelecionada, colunaCasaSelecionada);
 					destacaMovimentosValidos(movimentosValidos);
 
 				} catch (MovimentoInvalidoException e1) {
 					//Clicou no meio do nada
-					System.out.println("Movimento invalido!");
+					//System.out.println("Movimento invalido!");
 				}
 			}
 		}
