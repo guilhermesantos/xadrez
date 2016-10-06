@@ -11,16 +11,10 @@ public class Xadrez extends Observable {
 
 	private EstadoJogo estadoJogo;
 
-	private Peca pecaSelecionada;
-	
 	private Point posicaoUltimaPecaSelecionada;
 
 	public Point getPosicaoUltimaPecaSelecionada() {
 		return posicaoUltimaPecaSelecionada;
-	}
-
-	public Peca getPecaSelecionada() {
-		return pecaSelecionada;
 	}
 
 	public Xadrez(Observer observer) {
@@ -31,7 +25,6 @@ public class Xadrez extends Observable {
 	public void iniciaNovoJogo() {
 		Tabuleiro.getInstance().reinicializaTabuleiro();
 		estadoJogo = EstadoJogo.TURNO_BRANCO;
-		pecaSelecionada = null;
 		posicaoUltimaPecaSelecionada = null;
 	}
 
@@ -59,7 +52,6 @@ public class Xadrez extends Observable {
 			throw new MovimentoInvalidoException();
 		}
 		
-		pecaSelecionada = Tabuleiro.getInstance().getPeca(linha, coluna);
 		posicaoUltimaPecaSelecionada = new Point(linha, coluna);
 		
 		return movimentosValidos;
@@ -68,10 +60,12 @@ public class Xadrez extends Observable {
 	public void movePeca(int linhaOrigem, int colunaOrigem, 
 			int linhaDestino, int colunaDestino) {
 		Peca pecaDeslocada = Tabuleiro.getInstance().getPeca(linhaOrigem, colunaOrigem);
-		boolean capturouRei = false;
 		
-		if(!Tabuleiro.getInstance().casaEstaVazia(linhaDestino, colunaDestino)) {
-			if(Tabuleiro.getInstance().getPeca(linhaDestino, colunaDestino) instanceof Rei) {
+		boolean estaCapturandoUmaPeca = !Tabuleiro.getInstance().casaEstaVazia(linhaDestino, colunaDestino);
+		if(estaCapturandoUmaPeca) {
+			
+			boolean pecaCapturadaEhORei = Tabuleiro.getInstance().getPeca(linhaDestino, colunaDestino) instanceof Rei;
+			if(pecaCapturadaEhORei) {
 				setChanged();
 				notifyObservers(estadoJogo);
 			}
