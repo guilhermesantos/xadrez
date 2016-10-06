@@ -7,7 +7,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import exceptions.ClicouNoMeioDoNadaException;
-import exceptions.MovimentoInvalidoException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
 
@@ -15,12 +14,16 @@ public class Xadrez extends Observable {
 
 	private EstadoJogo estadoJogo;
 
-	private Point posicaoUltimaPecaSelecionada;
+	private Point coordenadasPecaSelecionada;
 	
 	private List<Point> movimentosValidos;
 
-	public Point getPosicaoUltimaPecaSelecionada() {
-		return posicaoUltimaPecaSelecionada;
+	public List<Point> getMovimentosValidos() {
+		return movimentosValidos;
+	}
+
+	public Point getCoordenadasPecaSelecionada() {
+		return coordenadasPecaSelecionada;
 	}
 
 	public Xadrez(Observer observer) {
@@ -31,54 +34,53 @@ public class Xadrez extends Observable {
 	public void iniciaNovoJogo() {
 		Tabuleiro.getInstance().reinicializaTabuleiro();
 		estadoJogo = EstadoJogo.TURNO_BRANCO;
-		posicaoUltimaPecaSelecionada = null;
+		coordenadasPecaSelecionada = null;
 		movimentosValidos = new ArrayList<Point>();
 	}
 
-	public List<Point> selecionaPeca(int linha, int coluna) throws PecaNaoPertenceAoJogadorException, NaoHaMovimentosValidosException, ClicouNoMeioDoNadaException {
+	public List<Point> selecionaPeca(Point coordenadas) throws PecaNaoPertenceAoJogadorException, NaoHaMovimentosValidosException, ClicouNoMeioDoNadaException {
 
-		if (Tabuleiro.getInstance().casaEstaVazia(linha, coluna)) {
+		if (Tabuleiro.getInstance().casaEstaVazia(coordenadas.x, coordenadas.y)) {
 			throw new ClicouNoMeioDoNadaException();
 		}
 
 		boolean pecaPertenceAoJogador = (Tabuleiro.getInstance().
-				getPeca(linha, coluna).cor == Cor.BRANCO
+				getPeca(coordenadas.x, coordenadas.y).cor == Cor.BRANCO
 				&& estadoJogo == EstadoJogo.TURNO_BRANCO)
-				|| (Tabuleiro.getInstance().getPeca(linha, coluna).cor == Cor.PRETO
+				|| (Tabuleiro.getInstance().getPeca(coordenadas.x, coordenadas.y).cor == Cor.PRETO
 						&& estadoJogo == EstadoJogo.TURNO_PRETO);
 
 		if (!pecaPertenceAoJogador) {
-			System.out.println("Peca nao pertence ao jogador");
 			throw new PecaNaoPertenceAoJogadorException();
 		}
-		movimentosValidos = Tabuleiro.getInstance().getPeca(linha, coluna).
-				getMovimentosValidos(linha,	coluna);
+		movimentosValidos = Tabuleiro.getInstance().getPeca(coordenadas.x, coordenadas.y).
+				getMovimentosValidos(coordenadas.x,	coordenadas.y);
 		
 		if (movimentosValidos.isEmpty()) {
-			System.out.println("Nao ha movimentos validos pra essa peca");
 			throw new NaoHaMovimentosValidosException();
 		}
 		
-		posicaoUltimaPecaSelecionada = new Point(linha, coluna);
+		coordenadasPecaSelecionada = new Point(coordenadas.x, coordenadas.y);
 		
 		return movimentosValidos;
 	}
 	
-	public void movePeca(int linhaOrigem, int colunaOrigem, 
-			int linhaDestino, int colunaDestino) {
-		Peca pecaDeslocada = Tabuleiro.getInstance().getPeca(linhaOrigem, colunaOrigem);
+	public void movePeca(Point coordenadasOrigem, 
+			Point coordenadasDestino) {
+		Peca pecaDeslocada = Tabuleiro.getInstance().getPeca(coordenadasOrigem.x, coordenadasOrigem.y);
 		
-		boolean estaCapturandoUmaPeca = !Tabuleiro.getInstance().casaEstaVazia(linhaDestino, colunaDestino);
+		boolean estaCapturandoUmaPeca = !Tabuleiro.getInstance().casaEstaVazia(coordenadasDestino.x, coordenadasDestino.y);
 		if(estaCapturandoUmaPeca) {
 			
-			boolean pecaCapturadaEhORei = Tabuleiro.getInstance().getPeca(linhaDestino, colunaDestino) instanceof Rei;
+			boolean pecaCapturadaEhORei = Tabuleiro.getInstance()
+					.getPeca(coordenadasDestino.x, coordenadasDestino.y) instanceof Rei;
 			if(pecaCapturadaEhORei) {
 				setChanged();
 				notifyObservers(estadoJogo);
 			}
 		}
-		Tabuleiro.getInstance().removePeca(linhaOrigem, colunaOrigem);
-		Tabuleiro.getInstance().colocaPeca(linhaDestino, colunaDestino, pecaDeslocada);
+		Tabuleiro.getInstance().removePeca(coordenadasOrigem.x, coordenadasOrigem.y);
+		Tabuleiro.getInstance().colocaPeca(coordenadasDestino.x, coordenadasDestino.y, pecaDeslocada);
 
 		if(pecaDeslocada instanceof Peao) {
 			((Peao)pecaDeslocada).setPrimeiroMovimento(false);

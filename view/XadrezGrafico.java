@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import exceptions.ClicouNoMeioDoNadaException;
-import exceptions.MovimentoInvalidoException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
 import game.EstadoJogo;
@@ -67,30 +66,25 @@ public class XadrezGrafico extends JPanel implements Observer {
 	}
 	
 	private class XadrezMouseListener implements MouseListener {
-		public XadrezMouseListener() {
-			System.out.println("blablabla");
-		}
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			Point casaSelecionada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
-			int linhaCasaSelecionada = casaSelecionada.x;
-			int colunaCasaSelecionada = casaSelecionada.y;
-			
-			if(tabuleiroGrafico.casaEstaDestacada(casaSelecionada)) {
-				jogo.movePeca(jogo.getPosicaoUltimaPecaSelecionada().x, 
-						jogo.getPosicaoUltimaPecaSelecionada().y, linhaCasaSelecionada, colunaCasaSelecionada);
+			Point coordenadasCasaSelecionada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
+
+			boolean casaSelecionadaEhUmMovimentoValido = jogo.getMovimentosValidos().contains(coordenadasCasaSelecionada);
+			if(casaSelecionadaEhUmMovimentoValido) {
+				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaSelecionada);
 				tabuleiroGrafico.atualizaPosicaoDasPecasNoTabuleiroGrafico();
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {
-					List<Point> movimentosValidos = jogo.selecionaPeca(linhaCasaSelecionada, colunaCasaSelecionada);
+					List<Point> movimentosValidos = jogo.selecionaPeca(coordenadasCasaSelecionada);
 					tabuleiroGrafico.destacaCasas(movimentosValidos);
 
 				} catch (ClicouNoMeioDoNadaException e1) {
 					System.out.println("O jogador clicou no meio do nada.");
 				} catch (PecaNaoPertenceAoJogadorException e2) {
-					System.out.println("A peca selecionada nao pertence ao jogador!");
+					System.out.println("A peca selecionada nao pertence ao jogador.");
 				} catch (NaoHaMovimentosValidosException e3) {
 					System.out.println("Nao há movimentos válidos para a peça selecionada.");
 				} 

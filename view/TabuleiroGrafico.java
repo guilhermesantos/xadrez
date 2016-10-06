@@ -45,7 +45,6 @@ public class TabuleiroGrafico extends JPanel {
 	}
 	
 	public void atualizaPosicaoDasPecasNoTabuleiroGrafico() {
-		Tabuleiro.getInstance().exibeTabuleiroNoConsole();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				JLabel containerDoIconeDaPeca = (JLabel)casas[i][j].getComponent(0);
