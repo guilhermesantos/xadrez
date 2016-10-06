@@ -1,2 +1,4 @@
 /MovimentoInvalidoException.class
 /PecaNaoPertenceAoJogadorException.class
+/NaoHaMovimentosValidosException.class
+/ClicouNoMeioDoNadaException.class

@@ -13,7 +13,10 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import exceptions.ClicouNoMeioDoNadaException;
 import exceptions.MovimentoInvalidoException;
+import exceptions.NaoHaMovimentosValidosException;
+import exceptions.PecaNaoPertenceAoJogadorException;
 import game.EstadoJogo;
 import game.Xadrez;
 
@@ -84,9 +87,14 @@ public class XadrezGrafico extends JPanel implements Observer {
 					List<Point> movimentosValidos = jogo.selecionaPeca(linhaCasaSelecionada, colunaCasaSelecionada);
 					tabuleiroGrafico.destacaCasas(movimentosValidos);
 
-				} catch (MovimentoInvalidoException e1) {
-					//Clicou no meio do nada
-				}
+				} catch (ClicouNoMeioDoNadaException e1) {
+					System.out.println("O jogador clicou no meio do nada.");
+				} catch (PecaNaoPertenceAoJogadorException e2) {
+					System.out.println("A peca selecionada nao pertence ao jogador!");
+				} catch (NaoHaMovimentosValidosException e3) {
+					System.out.println("Nao há movimentos válidos para a peça selecionada.");
+				} 
+							
 			}
 		}
 
