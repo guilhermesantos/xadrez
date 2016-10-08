@@ -23,6 +23,11 @@ public class TabuleiroGrafico extends JPanel {
 	public TabuleiroGrafico(Xadrez xadrez) {
 		this.jogo = xadrez;
 		super.setLayout(new GridLayout(8, 8));
+		constroiEColoreAsCasas();
+		atualizaTabuleiroGrafico();
+	}
+	
+	public void constroiEColoreAsCasas() {
 		casas = new JPanel[8][8];
 		boolean corBranca = true;
 
@@ -40,11 +45,10 @@ public class TabuleiroGrafico extends JPanel {
 				corBranca = !corBranca;
 			}
 			corBranca = !corBranca;
-		}
-		atualizaPosicaoDasPecasNoTabuleiroGrafico();
+		}	
 	}
 	
-	public void atualizaPosicaoDasPecasNoTabuleiroGrafico() {
+	public void atualizaTabuleiroGrafico() {
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				JLabel containerDoIconeDaPeca = (JLabel)casas[i][j].getComponent(0);
@@ -64,7 +68,7 @@ public class TabuleiroGrafico extends JPanel {
 		limpaCasasDestacadasSeHouver(); 
 		
 		for(Point movimentoValido : movimentosValidos) {
-			casas[movimentoValido.x][movimentoValido.y].setBackground(Color.RED);
+			casas[movimentoValido.x][movimentoValido.y].setBackground(Color.YELLOW);
 		}
 		casasDestacadas.addAll(movimentosValidos);
 	}

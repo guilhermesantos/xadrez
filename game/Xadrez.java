@@ -1,16 +1,17 @@
 package game;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 import exceptions.ClicouNoMeioDoNadaException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
 
-public class Xadrez extends Observable {
+public class Xadrez extends Observable implements Serializable {
+	private static final long serialVersionUID = 4332058372731129426L;
 
 	private EstadoJogo estadoJogo;
 
@@ -26,8 +27,7 @@ public class Xadrez extends Observable {
 		return coordenadasPecaSelecionada;
 	}
 
-	public Xadrez(Observer observer) {
-		this.addObserver(observer);
+	public Xadrez() {
 		iniciaNovoJogo();
 	}
 
@@ -85,6 +85,7 @@ public class Xadrez extends Observable {
 		if(pecaDeslocada instanceof Peao) {
 			((Peao)pecaDeslocada).setPrimeiroMovimento(false);
 		}
+		movimentosValidos.clear();
 		
 		if(estadoJogo.equals(EstadoJogo.TURNO_BRANCO)) {
 			estadoJogo = EstadoJogo.TURNO_PRETO;

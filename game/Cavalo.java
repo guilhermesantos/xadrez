@@ -21,7 +21,7 @@ public class Cavalo extends Peca {
 
 	@Override
 	protected String getEnderecoImagem() {
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_CAVALO_PRETO :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_CAVALO_PRETO :
 			 Constantes.ENDERECO_IMAGEM_CAVALO_BRANCO;
 	}
 

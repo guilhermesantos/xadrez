@@ -20,7 +20,7 @@ public class Torre extends Peca {
 
 	@Override
 	protected String getEnderecoImagem() {
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_TORRE_PRETA :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_TORRE_PRETA :
 			 Constantes.ENDERECO_IMAGEM_TORRE_BRANCA;
 	}
 

@@ -21,9 +21,7 @@ public class Rei extends Peca {
 	
 	@Override
 	protected String getEnderecoImagem() {
-		System.out.println("cor do rei: " + cor);
-		System.out.println("cor do rei equals preto? " + cor.equals(cor.PRETO));
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_REI_PRETO :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_REI_PRETO :
 			 Constantes.ENDERECO_IMAGEM_REI_BRANCO;
 	}
 

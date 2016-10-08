@@ -22,7 +22,7 @@ public class Bispo extends Peca {
 
 	@Override
 	protected String getEnderecoImagem() {
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_BISPO_PRETO :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_BISPO_PRETO :
 					 Constantes.ENDERECO_IMAGEM_BISPO_BRANCO;
 	}
 

@@ -21,7 +21,7 @@ public class Rainha extends Peca {
 
 	@Override
 	protected String getEnderecoImagem() {
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_RAINHA_PRETA :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_RAINHA_PRETA :
 			 Constantes.ENDERECO_IMAGEM_RAINHA_BRANCA;
 	}
 

@@ -26,7 +26,7 @@ public class Peao extends Peca {
 	
 	@Override
 	protected String getEnderecoImagem() {
-		return cor.equals(cor.PRETO) ? Constantes.ENDERECO_IMAGEM_PEAO_PRETO :
+		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_PEAO_PRETO :
 			 Constantes.ENDERECO_IMAGEM_PEAO_BRANCO;
 	}
 
@@ -43,7 +43,7 @@ public class Peao extends Peca {
 	
 	private List<Point> pesquisaSeDaPraAndarPraFrente(int linha, int coluna) {
 		List<Point> movimentoPraFrente = new ArrayList<Point>();
-		if(cor.equals(cor.BRANCO)) {
+		if(cor.equals(Cor.BRANCO)) {
 			if(peaoEhBrancoEPodeAndarPraFrente(linha, coluna)) {
 				movimentoPraFrente.add(new Point(linha-1, coluna));
 				if(primeiroMovimento && peaoEhBrancoEPodeAndarPraFrente(linha-1, coluna)) {
@@ -123,7 +123,6 @@ public class Peao extends Peca {
 				movimentoDeCaptura.add(new Point(linha-1, coluna+1));
 			}
 		} else {
-			System.out.println("Pesquisa p/ direita. Peao eh preto");
 			if(peaoEhPretoEPodeCapturarPraDireita(linha, coluna)) {
 				movimentoDeCaptura.add(new Point(linha+1, coluna+1));
 			}
@@ -144,10 +143,8 @@ public class Peao extends Peca {
 	
 	private boolean peaoEhPretoEPodeCapturarPraDireita(int linha, int coluna) {
 		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+1, coluna+1)) {
-			System.out.println("casa esta dentro do tabuleiro");
 			if(!Tabuleiro.getInstance().casaEstaVazia(linha+1, coluna+1)) { 
 				if(Tabuleiro.getInstance().getPeca(linha+1, coluna+1).getCor().equals(Cor.BRANCO)) {
-					System.out.println("achou uma peca branca em "+linha+1+" "+coluna+1);
 					return true;
 				}
 			}

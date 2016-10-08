@@ -27,28 +27,31 @@ public class XadrezGrafico extends JPanel implements Observer {
 	private TabuleiroGrafico tabuleiroGrafico;
 	private XadrezMouseListener listener;
 	
-	public XadrezGrafico() {
+	public XadrezGrafico(Xadrez jogo) {
 		super.setLayout(new BorderLayout());
 		listener = new XadrezMouseListener();
 		super.addMouseListener(listener);
 		
-		jogo = new Xadrez(this);
-
+		this.jogo = jogo;
 		tabuleiroGrafico = new TabuleiroGrafico(jogo);
-		add(tabuleiroGrafico);
 		tabuleiroGrafico.addMouseListener(listener);
+		add(tabuleiroGrafico);
+	}
+	
+	public void atualizaRepresentacaoGrafica() {
+		tabuleiroGrafico.atualizaTabuleiroGrafico();
 	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		FimDeJogoDialog dialog = new FimDeJogoDialog
-				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
+		XadrezDialog dialog = new XadrezDialog
+				(SwingUtilities.getWindowAncestor(this), "Fim de jogo", false);
 
 		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
-			dialog.setText("Jogador branco venceu!");
+			dialog.setTextoMensagem("Jogador branco venceu!");
 			System.out.println("Jogador branco venceu!");
-		} else {
-			dialog.setText("Jogador preto venceu!");
+		} else if(arg.equals(EstadoJogo.TURNO_PRETO)){
+			dialog.setTextoMensagem("Jogador preto venceu!");
 			System.out.println("Jogador preto venceu!");
 		}
 		
@@ -57,7 +60,7 @@ public class XadrezGrafico extends JPanel implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jogo.iniciaNovoJogo();
-				tabuleiroGrafico.atualizaPosicaoDasPecasNoTabuleiroGrafico();
+				tabuleiroGrafico.atualizaTabuleiroGrafico();
 				dialog.dispose();
 			}
 			
@@ -74,7 +77,7 @@ public class XadrezGrafico extends JPanel implements Observer {
 			boolean casaSelecionadaEhUmMovimentoValido = jogo.getMovimentosValidos().contains(coordenadasCasaSelecionada);
 			if(casaSelecionadaEhUmMovimentoValido) {
 				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaSelecionada);
-				tabuleiroGrafico.atualizaPosicaoDasPecasNoTabuleiroGrafico();
+				tabuleiroGrafico.atualizaTabuleiroGrafico();
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {

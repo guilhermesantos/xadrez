@@ -37,8 +37,6 @@ public abstract class Peca {
 	
 	public ImageIcon carregarImagem() throws IOException {
 		URL urlImagem = this.getClass().getResource(getEnderecoImagem());
-		System.out.println("endereco imagem: " + getEnderecoImagem());
-		System.out.println("cor da peca: " + getCor().toString());
 		if(urlImagem == null) {
 			System.out.println("Nao conseguiu carregar imagem");
 			throw new IOException();
