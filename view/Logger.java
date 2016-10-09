@@ -10,7 +10,8 @@ public class Logger extends JTextField {
 	}
 	
 	public void logar(String texto) {
-		setText(getText().concat("\n" + texto));
+		setText(null);
+		setText(texto);
 	}
 	
 	private static class LoggerSingletonHolder {

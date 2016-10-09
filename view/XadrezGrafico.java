@@ -45,7 +45,16 @@ public class XadrezGrafico extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		XadrezDialog dialog = new XadrezDialog
-				(SwingUtilities.getWindowAncestor(this), "Fim de jogo", false);
+				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
+
+		ActionListener fazBotaoReiniciarOJogo = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jogo.iniciaNovoJogo();
+				tabuleiroGrafico.atualizaTabuleiroGrafico();
+				dialog.dispose();
+			}
+		};
 
 		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
 			dialog.setTextoMensagem("Jogador branco venceu!");
@@ -55,16 +64,13 @@ public class XadrezGrafico extends JPanel implements Observer {
 			System.out.println("Jogador preto venceu!");
 		}
 		
-		dialog.getButton().addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jogo.iniciaNovoJogo();
-				tabuleiroGrafico.atualizaTabuleiroGrafico();
-				dialog.dispose();
-			}
-			
-		});
+		dialog.getButton().addActionListener(fazBotaoReiniciarOJogo);
+		int i = 1;
+		for(ActionListener listener : dialog.getButton().getActionListeners()) {
+			System.out.println("O botao tem " + i + " action listeners!");
+			i++;
+		}
+		
 		dialog.setVisible(true);
 	}
 	
@@ -85,11 +91,11 @@ public class XadrezGrafico extends JPanel implements Observer {
 					tabuleiroGrafico.destacaCasas(movimentosValidos);
 
 				} catch (ClicouNoMeioDoNadaException e1) {
-					System.out.println("O jogador clicou no meio do nada.");
+					Logger.getInstance().logar("O jogador clicou no meio do nada.");
 				} catch (PecaNaoPertenceAoJogadorException e2) {
-					System.out.println("A peca selecionada nao pertence ao jogador.");
+					Logger.getInstance().logar("A peca selecionada nao pertence ao jogador.");
 				} catch (NaoHaMovimentosValidosException e3) {
-					System.out.println("Nao há movimentos válidos para a peça selecionada.");
+					Logger.getInstance().logar("Nao há movimentos válidos para a peça selecionada.");
 				} 
 							
 			}

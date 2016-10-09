@@ -12,28 +12,41 @@ import javax.swing.JLabel;
 import properties.Constantes;
 
 public class XadrezDialog extends JDialog {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6412765964258819121L;
 	private JButton botao;
 	private JLabel labelMensagem;
 	
-	public XadrezDialog(Window window, String title, boolean acaoPadraoEhFechar) {
-		super(window, title);
+	public XadrezDialog(Window window, String tituloDaJanela) {
+		super(window, tituloDaJanela);
 		super.setLayout(new BorderLayout());
 		super.setSize(200, 100);
 		super.setLocation(Constantes.LARGURA_JANELA/2, Constantes.ALTURA_JANELA/2);
 		
 		botao = new JButton("Ok");
-		if(acaoPadraoEhFechar) {
-			fazBotaoFecharODialog();
-		}
+		fazBotaoFecharODialog();
 
 		labelMensagem = new JLabel();
 		super.add(botao, BorderLayout.SOUTH);
 	}
-
+	
+	public XadrezDialog(Window window, String tituloDaJanela, String mensagem) {
+		this(window, tituloDaJanela);
+		System.out.println("Vai setar a mensagem do label");
+		labelMensagem.setText(mensagem);
+		super.add(labelMensagem, BorderLayout.NORTH);
+		System.out.println("Setou a mensagem do label");
+	}
+	
+	public XadrezDialog(Window window, String tituloDaJanela, String mensagem, String mensagemNoBotao) {
+		this(window, tituloDaJanela, mensagem);
+		botao.setText(mensagemNoBotao);
+	}
+	
+	public XadrezDialog(Window window, String tituloDaJanela, ActionListener acaoDoBotao) {
+		this(window, tituloDaJanela);
+		botao.addActionListener(acaoDoBotao);
+	}
+	
 	private void fazBotaoFecharODialog() {
 		botao.addActionListener(
 				new ActionListener() {
@@ -57,6 +70,4 @@ public class XadrezDialog extends JDialog {
 	public JButton getButton() {
 		return botao;
 	}
-	
-	
 }

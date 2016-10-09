@@ -40,7 +40,6 @@ public class Janela extends JFrame {
 		janelaExterna = SwingUtilities.getWindowAncestor(this);
 		
 		JPanel container = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		//container.setBackground(Color.WHITE);
 		
 		botaoReiniciar = criaBotaoReiniciar();
 		container.add(botaoReiniciar);
@@ -60,6 +59,8 @@ public class Janela extends JFrame {
 		xadrezGrafico = new XadrezGrafico(jogo);
 		jogo.addObserver(xadrezGrafico);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
+		
+		super.add(Logger.getInstance(), BorderLayout.SOUTH);
 	}
 	
 	private JButton criaBotaoReiniciar() {
@@ -86,16 +87,9 @@ public class Janela extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					FileOutputStream fileOutput = new FileOutputStream("jogo_salvo");
-					ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
-					objectOutput.writeObject(jogo);
-					objectOutput.flush();
-					objectOutput.close();
-					XadrezDialog dialog = new XadrezDialog(janelaExterna, "Salvar", true);
-					dialog.setTextoMensagem("Jogo salvo.");
-					dialog.setTextoBotao("Ok");
+					salvaJogo();
+					XadrezDialog dialog = new XadrezDialog(janelaExterna, "Salvar", "Jogo salvo.");
 					dialog.setVisible(true);
-					
 				} catch (FileNotFoundException e1) {
 					System.out.println("Arquivo nao encontrado");
 				} catch (IOException e1) {
@@ -130,12 +124,19 @@ public class Janela extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				XadrezDialog dialog = new XadrezDialog(janelaExterna, 
-						"Multiplayer", true);
-				dialog.setTextoBotao("Cancelar");
-				dialog.setTextoMensagem("Aguardando conexão");
+						"Multiplayer", "Aguardando conexão", "Cancelar");
 				dialog.setVisible(true);
 			}
 		});
 		return botaoMultiplayer;
+	}
+
+	private void salvaJogo() throws FileNotFoundException, IOException {
+		FileOutputStream fileOutput = new FileOutputStream("jogo_salvo.dat");
+		ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
+		objectOutput.writeObject(jogo);
+		objectOutput.flush();
+		objectOutput.close();
+
 	}
 }
