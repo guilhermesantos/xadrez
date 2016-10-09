@@ -31,10 +31,8 @@ public class XadrezDialog extends JDialog {
 	
 	public XadrezDialog(Window window, String tituloDaJanela, String mensagem) {
 		this(window, tituloDaJanela);
-		System.out.println("Vai setar a mensagem do label");
 		labelMensagem.setText(mensagem);
 		super.add(labelMensagem, BorderLayout.NORTH);
-		System.out.println("Setou a mensagem do label");
 	}
 	
 	public XadrezDialog(Window window, String tituloDaJanela, String mensagem, String mensagemNoBotao) {
