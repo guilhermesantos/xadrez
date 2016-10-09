@@ -10,6 +10,7 @@ public class Tabuleiro {
 	public static Tabuleiro getInstance() {
 		return TabuleiroSingletonHolder.tabuleiro;
 	}
+	
 	private Tabuleiro() {
 		casas = new Peca[8][8];
 		reinicializaTabuleiro();

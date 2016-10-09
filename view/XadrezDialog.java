@@ -9,12 +9,14 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import exceptions.BotaoNaoTemListenerException;
 import properties.Constantes;
 
 public class XadrezDialog extends JDialog {
 	private static final long serialVersionUID = -6412765964258819121L;
 	private JButton botao;
 	private JLabel labelMensagem;
+	
 	
 	public XadrezDialog(Window window, String tituloDaJanela) {
 		super(window, tituloDaJanela);
@@ -65,7 +67,11 @@ public class XadrezDialog extends JDialog {
 		super.add(labelMensagem, BorderLayout.NORTH);
 	}
 	
-	public JButton getButton() {
-		return botao;
+	public void substituiActionListenerDoBotao(ActionListener novoListener) throws BotaoNaoTemListenerException {
+		if(botao.getActionListeners().length == 0) {
+			throw new BotaoNaoTemListenerException();
+		} 
+		botao.removeActionListener(botao.getActionListeners()[0]);
+		botao.addActionListener(novoListener);
 	}
 }

@@ -10,7 +10,6 @@ public class Logger extends JTextField {
 	}
 	
 	public void logar(String texto) {
-		setText(null);
 		setText(texto);
 	}
 	

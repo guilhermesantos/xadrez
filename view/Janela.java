@@ -7,9 +7,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -87,9 +85,10 @@ public class Janela extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					salvaJogo();
-					XadrezDialog dialog = new XadrezDialog(janelaExterna, "Salvar", "Jogo salvo.");
-					dialog.setVisible(true);
+					jogo.salvaJogo("jogo_salvo.dat");
+					//XadrezDialog dialog = new XadrezDialog(janelaExterna, "Salvar", "Jogo salvo.");
+					//dialog.setVisible(true);
+					Logger.getInstance().logar("Jogo salvo.");
 				} catch (FileNotFoundException e1) {
 					System.out.println("Arquivo nao encontrado");
 				} catch (IOException e1) {
@@ -106,10 +105,20 @@ public class Janela extends JFrame {
 		
 		botaoCarregar.addActionListener(
 		new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					jogo = jogo.carregaJogo();
+					xadrezGrafico.setJogo(jogo);
+					xadrezGrafico.atualizaRepresentacaoGrafica();
+				} catch (FileNotFoundException e1) {
+					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");
+				} catch (IOException e1) {
+					Logger.getInstance().logar("IOException. D:");
+				} catch (ClassNotFoundException e1) {
+					Logger.getInstance().logar("Erro ao deserializar a instância de xadrez que estava salva em disco!");
+				}
+			
 			}
 		});
 		return botaoCarregar;
@@ -131,12 +140,5 @@ public class Janela extends JFrame {
 		return botaoMultiplayer;
 	}
 
-	private void salvaJogo() throws FileNotFoundException, IOException {
-		FileOutputStream fileOutput = new FileOutputStream("jogo_salvo.dat");
-		ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
-		objectOutput.writeObject(jogo);
-		objectOutput.flush();
-		objectOutput.close();
 
-	}
 }

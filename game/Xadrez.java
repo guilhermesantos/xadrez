@@ -1,6 +1,12 @@
 package game;
 
 import java.awt.Point;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +20,12 @@ public class Xadrez extends Observable implements Serializable {
 	private static final long serialVersionUID = 4332058372731129426L;
 
 	private EstadoJogo estadoJogo;
-
 	private Point coordenadasPecaSelecionada;
-	
 	private List<Point> movimentosValidos;
+	
+	public EstadoJogo getEstadoJogo() {
+		return estadoJogo;
+	}
 
 	public List<Point> getMovimentosValidos() {
 		return movimentosValidos;
@@ -93,4 +101,22 @@ public class Xadrez extends Observable implements Serializable {
 			estadoJogo = EstadoJogo.TURNO_BRANCO;
 		}
 	}
+	
+	public void salvaJogo(String nomeArquivo) throws FileNotFoundException, IOException {
+		FileOutputStream fileOutput = new FileOutputStream(nomeArquivo);
+		ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
+		objectOutput.writeObject(this);
+		objectOutput.flush();
+		objectOutput.close();
+	}
+	
+	public Xadrez carregaJogo() throws FileNotFoundException, IOException, ClassNotFoundException {
+		Xadrez jogoCarregado;
+		FileInputStream fileInput = new FileInputStream("jogo_salvo.dat");
+		ObjectInputStream objectInput = new ObjectInputStream(fileInput);
+		jogoCarregado = (Xadrez)objectInput.readObject();
+		objectInput.close();
+		return jogoCarregado;
+	}
+
 }

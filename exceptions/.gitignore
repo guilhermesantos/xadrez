@@ -3,3 +3,4 @@
 /NaoHaMovimentosValidosException.class
 /ClicouNoMeioDoNadaException.class
 /ConexaoAindaNaoEstabelecidaException.class
+/BotaoNaoTemListenerException.class

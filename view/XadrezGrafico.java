@@ -13,6 +13,7 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import exceptions.BotaoNaoTemListenerException;
 import exceptions.ClicouNoMeioDoNadaException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
@@ -24,16 +25,19 @@ public class XadrezGrafico extends JPanel implements Observer {
 	private static final long serialVersionUID = -4661370508920536135L;
 
 	private Xadrez jogo;
+
 	private TabuleiroGrafico tabuleiroGrafico;
 	private XadrezMouseListener listener;
-	
+
 	public XadrezGrafico(Xadrez jogo) {
 		super.setLayout(new BorderLayout());
 		listener = new XadrezMouseListener();
 		super.addMouseListener(listener);
 		
 		this.jogo = jogo;
-		tabuleiroGrafico = new TabuleiroGrafico(jogo);
+		Logger.getInstance().logar(jogo.getEstadoJogo().toString());
+		
+		tabuleiroGrafico = new TabuleiroGrafico();
 		tabuleiroGrafico.addMouseListener(listener);
 		add(tabuleiroGrafico);
 	}
@@ -63,15 +67,18 @@ public class XadrezGrafico extends JPanel implements Observer {
 			dialog.setTextoMensagem("Jogador preto venceu!");
 			System.out.println("Jogador preto venceu!");
 		}
-		
-		dialog.getButton().addActionListener(fazBotaoReiniciarOJogo);
-		int i = 1;
-		for(ActionListener listener : dialog.getButton().getActionListeners()) {
-			System.out.println("O botao tem " + i + " action listeners!");
-			i++;
+
+		try {
+			dialog.substituiActionListenerDoBotao(fazBotaoReiniciarOJogo);
+		} catch (BotaoNaoTemListenerException e1) {
+			System.out.println("Problema ao substituir o action listener do botão");
 		}
 		
 		dialog.setVisible(true);
+	}
+	
+	public void setJogo(Xadrez jogo) {
+		this.jogo = jogo;
 	}
 	
 	private class XadrezMouseListener implements MouseListener {
@@ -79,11 +86,12 @@ public class XadrezGrafico extends JPanel implements Observer {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Point coordenadasCasaSelecionada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
-
+			
 			boolean casaSelecionadaEhUmMovimentoValido = jogo.getMovimentosValidos().contains(coordenadasCasaSelecionada);
 			if(casaSelecionadaEhUmMovimentoValido) {
 				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaSelecionada);
 				tabuleiroGrafico.atualizaTabuleiroGrafico();
+				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {

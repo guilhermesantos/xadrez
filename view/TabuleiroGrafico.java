@@ -12,16 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Tabuleiro;
-import game.Xadrez;
 
 public class TabuleiroGrafico extends JPanel {
 	private static final long serialVersionUID = -6253571512577610354L;
 	private JPanel [][]casas;
 	private List<Point> casasDestacadas;
-	private Xadrez jogo;
 	
-	public TabuleiroGrafico(Xadrez xadrez) {
-		this.jogo = xadrez;
+	public TabuleiroGrafico() {
 		super.setLayout(new GridLayout(8, 8));
 		constroiEColoreAsCasas();
 		atualizaTabuleiroGrafico();
