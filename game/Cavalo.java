@@ -27,78 +27,86 @@ public class Cavalo extends Peca {
 
 
 	@Override
-	public List<Point> getMovimentosValidos(int linha, int coluna) {
+	public List<Point> getMovimentosValidos(Tabuleiro tabuleiro, int linha, int coluna) {
 		List<Point> movimentosValidos = new ArrayList<Point>();
 		
-		getMovimentoCimaCimaDireita(linha, coluna, movimentosValidos);
-		getMovimentoCimaCimaEsquerda(linha, coluna, movimentosValidos);
+		getMovimentoCimaCimaDireita(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentoCimaCimaEsquerda(tabuleiro, linha, coluna, movimentosValidos);
 		
-		getMovimentoBaixoBaixoDireita(linha, coluna, movimentosValidos);
-		getMovimentoBaixoBaixoEsquerda(linha, coluna, movimentosValidos);
+		getMovimentoBaixoBaixoDireita(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentoBaixoBaixoEsquerda(tabuleiro, linha, coluna, movimentosValidos);
 		
-		getMovimentoDireitaDireitaCima(linha, coluna, movimentosValidos);
-		getMovimentoDireitaDireitaBaixo(linha, coluna, movimentosValidos);
+		getMovimentoDireitaDireitaCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentoDireitaDireitaBaixo(tabuleiro, linha, coluna, movimentosValidos);
 		
-		getMovimentoEsquerdaEsquerdaCima(linha, coluna, movimentosValidos);
-		getMovimentoEsquerdaEsquerdaBaixo(linha, coluna, movimentosValidos);
+		getMovimentoEsquerdaEsquerdaCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentoEsquerdaEsquerdaBaixo(tabuleiro, linha, coluna, movimentosValidos);
 		return movimentosValidos;
 	}
 	
-	private boolean isMovimentoValido(int linha, int coluna, int linhaCandidato, int colunaCandidato) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linhaCandidato, colunaCandidato)) {
-			if(Tabuleiro.getInstance().casaEstaVazia(linhaCandidato, colunaCandidato)) {
+	private boolean isMovimentoValido(Tabuleiro tabuleiro, int linha, int coluna, int linhaCandidato, int colunaCandidato) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linhaCandidato, colunaCandidato)) {
+			if(tabuleiro.casaEstaVazia(linhaCandidato, colunaCandidato)) {
 				return true;
-			} else if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linhaCandidato, colunaCandidato)) {
+			} else if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linhaCandidato, colunaCandidato)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private void getMovimentoCimaCimaDireita(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha-2, coluna+1)) {
+	private void getMovimentoCimaCimaDireita(Tabuleiro tabuleiro, int linha, 
+			int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha-2, coluna+1)) {
 			movimentosValidos.add(new Point(linha-2, coluna+1));
 		}
 	}
 	
-	private void getMovimentoCimaCimaEsquerda(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha-2, coluna-1)) {
+	private void getMovimentoCimaCimaEsquerda(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha-2, coluna-1)) {
 			movimentosValidos.add(new Point(linha-2, coluna-1));
 		}
 	}
 	
-	private void getMovimentoBaixoBaixoDireita(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha+2, coluna+1)) {
+	private void getMovimentoBaixoBaixoDireita(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha+2, coluna+1)) {
 			movimentosValidos.add(new Point(linha+2, coluna+1));
 		}
 	}
 	
-	private void getMovimentoBaixoBaixoEsquerda(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha+2, coluna-1)) {
+	private void getMovimentoBaixoBaixoEsquerda(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha+2, coluna-1)) {
 			movimentosValidos.add(new Point(linha+2, coluna-1));
 		}
 	}
 
-	private void getMovimentoDireitaDireitaCima(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha-1, coluna+2)) {
+	private void getMovimentoDireitaDireitaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha-1, coluna+2)) {
 			movimentosValidos.add(new Point(linha-1, coluna+2));
 		}
 	}
 	
-	private void getMovimentoDireitaDireitaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha+1, coluna+2)) {
+	private void getMovimentoDireitaDireitaBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha+1, coluna+2)) {
 			movimentosValidos.add(new Point(linha+1, coluna+2));
 		}
 	}
 	
-	private void getMovimentoEsquerdaEsquerdaCima(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha-1, coluna-2)) {
+	private void getMovimentoEsquerdaEsquerdaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha-1, coluna-2)) {
 			movimentosValidos.add(new Point(linha-1, coluna-2));
 		}
 	}
 	
-	private void getMovimentoEsquerdaEsquerdaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
-		if(isMovimentoValido(linha, coluna, linha+1, coluna-2)) {
+	private void getMovimentoEsquerdaEsquerdaBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(isMovimentoValido(tabuleiro, linha, coluna, linha+1, coluna-2)) {
 			movimentosValidos.add(new Point(linha+1, coluna-2));
 		}
 	}

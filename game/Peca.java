@@ -2,13 +2,16 @@ package game;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 
 
-public abstract class Peca {
+public abstract class Peca implements Serializable {
+	private static final long serialVersionUID = 8007297597306325289L;
+
 	protected Cor cor;
 	
 	protected ImageIcon imagem;
@@ -31,7 +34,7 @@ public abstract class Peca {
 		return imagem;
 	}
 	
-	public abstract List<Point> getMovimentosValidos(int linha, int coluna);
+	public abstract List<Point> getMovimentosValidos(Tabuleiro tabuleiro, int linha, int coluna);
 	
 	protected abstract String getEnderecoImagem();
 	

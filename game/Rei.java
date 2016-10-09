@@ -27,110 +27,118 @@ public class Rei extends Peca {
 
 
 	@Override
-	public List<Point> getMovimentosValidos(int linha, int coluna) {
+	public List<Point> getMovimentosValidos(Tabuleiro tabuleiro, int linha, int coluna) {
 		List<Point> movimentosValidos = new ArrayList<Point>();
 		
-		getMovimentosValidosPraDireita(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraEsquerda(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraCima(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraBaixo(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraDireitaCima(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraDireitaBaixo(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraEsquerdaCima(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraEsquerdaBaixo(linha, coluna, movimentosValidos);
+		getMovimentosValidosPraDireita(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraEsquerda(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraBaixo(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraDireitaCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraDireitaBaixo(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraEsquerdaCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraEsquerdaBaixo(tabuleiro, linha, coluna, movimentosValidos);
 		return movimentosValidos;
 	}
 	
-	private void getMovimentosValidosPraDireita(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha, coluna+1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha, coluna+1)) {
+	private void getMovimentosValidosPraDireita(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha, coluna+1)){
+			if(tabuleiro.casaEstaVazia(linha, coluna+1)) {
 				movimentosValidos.add(new Point(linha, coluna+1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha, coluna+1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha, coluna+1)) {
 					movimentosValidos.add(new Point(linha, coluna+1));
 				}
 			}
 		}
 	}	
 
-	private void getMovimentosValidosPraEsquerda(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha, coluna-1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha, coluna-1)) {
+	private void getMovimentosValidosPraEsquerda(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha, coluna-1)){
+			if(tabuleiro.casaEstaVazia(linha, coluna-1)) {
 				movimentosValidos.add(new Point(linha, coluna-1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha, coluna-1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha, coluna-1)) {
 					movimentosValidos.add(new Point(linha, coluna-1));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraBaixo(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+1, coluna)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha+1, coluna)) {
+	private void getMovimentosValidosPraBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha+1, coluna)){
+			if(tabuleiro.casaEstaVazia(linha+1, coluna)) {
 				movimentosValidos.add(new Point(linha+1, coluna));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna)) {
 					movimentosValidos.add(new Point(linha+1, coluna));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraCima(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha-1, coluna)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha-1, coluna)) {
+	private void getMovimentosValidosPraCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha-1, coluna)){
+			if(tabuleiro.casaEstaVazia(linha-1, coluna)) {
 				movimentosValidos.add(new Point(linha-1, coluna));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna)) {
 					movimentosValidos.add(new Point(linha-1, coluna));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraDireitaCima(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha-1, coluna+1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha-1, coluna+1)) {
+	private void getMovimentosValidosPraDireitaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha-1, coluna+1)){
+			if(tabuleiro.casaEstaVazia(linha-1, coluna+1)) {
 				movimentosValidos.add(new Point(linha-1, coluna+1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna+1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna+1)) {
 					movimentosValidos.add(new Point(linha-1, coluna+1));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraDireitaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+1, coluna+1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha+1, coluna+1)) {
+	private void getMovimentosValidosPraDireitaBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha+1, coluna+1)){
+			if(tabuleiro.casaEstaVazia(linha+1, coluna+1)) {
 				movimentosValidos.add(new Point(linha+1, coluna+1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna+1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna+1)) {
 					movimentosValidos.add(new Point(linha+1, coluna+1));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraEsquerdaCima(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha-1, coluna-1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha-1, coluna-1)) {
+	private void getMovimentosValidosPraEsquerdaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha-1, coluna-1)){
+			if(tabuleiro.casaEstaVazia(linha-1, coluna-1)) {
 				movimentosValidos.add(new Point(linha-1, coluna-1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna-1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha-1, coluna-1)) {
 					movimentosValidos.add(new Point(linha-1, coluna-1));
 				}
 			}
 		}
 	}
 	
-	private void getMovimentosValidosPraEsquerdaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
-		if(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+1, coluna-1)){
-			if(Tabuleiro.getInstance().casaEstaVazia(linha+1, coluna-1)) {
+	private void getMovimentosValidosPraEsquerdaBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
+		if(!tabuleiro.casaEstaForaDoTabuleiro(linha+1, coluna-1)){
+			if(tabuleiro.casaEstaVazia(linha+1, coluna-1)) {
 				movimentosValidos.add(new Point(linha+1, coluna-1));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna-1)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha+1, coluna-1)) {
 					movimentosValidos.add(new Point(linha+1, coluna-1));
 				}
 			}

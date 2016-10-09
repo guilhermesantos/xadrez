@@ -114,7 +114,7 @@ public class Janela extends JFrame {
 				} catch (FileNotFoundException e1) {
 					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");
 				} catch (IOException e1) {
-					Logger.getInstance().logar("IOException. D:");
+					Logger.getInstance().logar("IOException. :(");
 				} catch (ClassNotFoundException e1) {
 					Logger.getInstance().logar("Erro ao deserializar a instância de xadrez que estava salva em disco!");
 				}

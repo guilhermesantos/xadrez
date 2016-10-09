@@ -22,7 +22,12 @@ public class Xadrez extends Observable implements Serializable {
 	private EstadoJogo estadoJogo;
 	private Point coordenadasPecaSelecionada;
 	private List<Point> movimentosValidos;
+	private Tabuleiro tabuleiro;
 	
+	public Tabuleiro getTabuleiro() {
+		return tabuleiro;
+	}
+
 	public EstadoJogo getEstadoJogo() {
 		return estadoJogo;
 	}
@@ -40,7 +45,7 @@ public class Xadrez extends Observable implements Serializable {
 	}
 
 	public void iniciaNovoJogo() {
-		Tabuleiro.getInstance().reinicializaTabuleiro();
+		tabuleiro = new Tabuleiro();
 		estadoJogo = EstadoJogo.TURNO_BRANCO;
 		coordenadasPecaSelecionada = null;
 		movimentosValidos = new ArrayList<Point>();
@@ -48,21 +53,21 @@ public class Xadrez extends Observable implements Serializable {
 
 	public List<Point> selecionaPeca(Point coordenadas) throws PecaNaoPertenceAoJogadorException, NaoHaMovimentosValidosException, ClicouNoMeioDoNadaException {
 
-		if (Tabuleiro.getInstance().casaEstaVazia(coordenadas.x, coordenadas.y)) {
+		if (tabuleiro.casaEstaVazia(coordenadas.x, coordenadas.y)) {
 			throw new ClicouNoMeioDoNadaException();
 		}
 
-		boolean pecaPertenceAoJogador = (Tabuleiro.getInstance().
+		boolean pecaPertenceAoJogador = (tabuleiro.
 				getPeca(coordenadas.x, coordenadas.y).cor == Cor.BRANCO
 				&& estadoJogo == EstadoJogo.TURNO_BRANCO)
-				|| (Tabuleiro.getInstance().getPeca(coordenadas.x, coordenadas.y).cor == Cor.PRETO
+				|| (tabuleiro.getPeca(coordenadas.x, coordenadas.y).cor == Cor.PRETO
 						&& estadoJogo == EstadoJogo.TURNO_PRETO);
 
 		if (!pecaPertenceAoJogador) {
 			throw new PecaNaoPertenceAoJogadorException();
 		}
-		movimentosValidos = Tabuleiro.getInstance().getPeca(coordenadas.x, coordenadas.y).
-				getMovimentosValidos(coordenadas.x,	coordenadas.y);
+		movimentosValidos = tabuleiro.getPeca(coordenadas.x, coordenadas.y).
+				getMovimentosValidos(tabuleiro, coordenadas.x,	coordenadas.y);
 		
 		if (movimentosValidos.isEmpty()) {
 			throw new NaoHaMovimentosValidosException();
@@ -75,20 +80,20 @@ public class Xadrez extends Observable implements Serializable {
 	
 	public void movePeca(Point coordenadasOrigem, 
 			Point coordenadasDestino) {
-		Peca pecaDeslocada = Tabuleiro.getInstance().getPeca(coordenadasOrigem.x, coordenadasOrigem.y);
+		Peca pecaDeslocada = tabuleiro.getPeca(coordenadasOrigem.x, coordenadasOrigem.y);
 		
-		boolean estaCapturandoUmaPeca = !Tabuleiro.getInstance().casaEstaVazia(coordenadasDestino.x, coordenadasDestino.y);
+		boolean estaCapturandoUmaPeca = !tabuleiro.casaEstaVazia(coordenadasDestino.x, coordenadasDestino.y);
 		if(estaCapturandoUmaPeca) {
 			
-			boolean pecaCapturadaEhORei = Tabuleiro.getInstance()
+			boolean pecaCapturadaEhORei = tabuleiro
 					.getPeca(coordenadasDestino.x, coordenadasDestino.y) instanceof Rei;
 			if(pecaCapturadaEhORei) {
 				setChanged();
 				notifyObservers(estadoJogo);
 			}
 		}
-		Tabuleiro.getInstance().removePeca(coordenadasOrigem.x, coordenadasOrigem.y);
-		Tabuleiro.getInstance().colocaPeca(coordenadasDestino.x, coordenadasDestino.y, pecaDeslocada);
+		tabuleiro.removePeca(coordenadasOrigem.x, coordenadasOrigem.y);
+		tabuleiro.colocaPeca(coordenadasDestino.x, coordenadasDestino.y, pecaDeslocada);
 
 		if(pecaDeslocada instanceof Peao) {
 			((Peao)pecaDeslocada).setPrimeiroMovimento(false);

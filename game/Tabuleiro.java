@@ -1,17 +1,12 @@
 package game;
 
-public class Tabuleiro {
+import java.io.Serializable;
+
+public class Tabuleiro implements Serializable {
+	private static final long serialVersionUID = 4007970990314413946L;
 	private Peca[][] casas;
 	
-	private static class TabuleiroSingletonHolder {
-		private static final Tabuleiro tabuleiro = new Tabuleiro();
-	}
-	
-	public static Tabuleiro getInstance() {
-		return TabuleiroSingletonHolder.tabuleiro;
-	}
-	
-	private Tabuleiro() {
+	public Tabuleiro() {
 		casas = new Peca[8][8];
 		reinicializaTabuleiro();
 	}

@@ -12,19 +12,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Tabuleiro;
+import game.Xadrez;
 
 public class TabuleiroGrafico extends JPanel {
 	private static final long serialVersionUID = -6253571512577610354L;
 	private JPanel [][]casas;
 	private List<Point> casasDestacadas;
 	
-	public TabuleiroGrafico() {
+	public TabuleiroGrafico(Xadrez jogo) {
 		super.setLayout(new GridLayout(8, 8));
 		constroiEColoreAsCasas();
-		atualizaTabuleiroGrafico();
+		atualizaTabuleiroGrafico(jogo);
 	}
 	
-	public void constroiEColoreAsCasas() {
+	private void constroiEColoreAsCasas() {
 		casas = new JPanel[8][8];
 		boolean corBranca = true;
 
@@ -45,15 +46,15 @@ public class TabuleiroGrafico extends JPanel {
 		}	
 	}
 	
-	public void atualizaTabuleiroGrafico() {
+	public void atualizaTabuleiroGrafico(Xadrez jogo) {
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				JLabel containerDoIconeDaPeca = (JLabel)casas[i][j].getComponent(0);
 				
-				if(Tabuleiro.getInstance().casaEstaVazia(i, j)) {
+				if(jogo.getTabuleiro().casaEstaVazia(i, j)) {
 					containerDoIconeDaPeca.setIcon(null);
 				} else {
-					containerDoIconeDaPeca.setIcon(Tabuleiro.getInstance().getPeca(i, j).getImagem());
+					containerDoIconeDaPeca.setIcon(jogo.getTabuleiro().getPeca(i, j).getImagem());
 				}
 			}
 		}

@@ -28,24 +28,25 @@ public class Bispo extends Peca {
 
 
 	@Override
-	public List<Point> getMovimentosValidos(int linha, int coluna) {
+	public List<Point> getMovimentosValidos(Tabuleiro tabuleiro, int linha, int coluna) {
 		List<Point> movimentosValidos = new ArrayList<Point>();
 		
-		getMovimentosValidosPraDireitaBaixo(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraDireitaCima(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraEsquerdaBaixo(linha, coluna, movimentosValidos);
-		getMovimentosValidosPraEsquerdaCima(linha, coluna, movimentosValidos);
+		getMovimentosValidosPraDireitaBaixo(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraDireitaCima(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraEsquerdaBaixo(tabuleiro, linha, coluna, movimentosValidos);
+		getMovimentosValidosPraEsquerdaCima(tabuleiro, linha, coluna, movimentosValidos);
 		
 		return movimentosValidos;
 	}
 	
-	private List<Point> getMovimentosValidosPraDireitaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
+	private List<Point> getMovimentosValidosPraDireitaBaixo(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
 		int i = 1;
-		while(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+i, coluna+i)) {
-			if(Tabuleiro.getInstance().casaEstaVazia(linha+i, coluna+i)) {
+		while(!tabuleiro.casaEstaForaDoTabuleiro(linha+i, coluna+i)) {
+			if(tabuleiro.casaEstaVazia(linha+i, coluna+i)) {
 				movimentosValidos.add(new Point(linha+i, coluna+i));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha+i, coluna+i)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha+i, coluna+i)) {
 					movimentosValidos.add(new Point(linha+i, coluna+i));
 				}
 				break;
@@ -55,13 +56,14 @@ public class Bispo extends Peca {
 		return movimentosValidos;
 	}
 
-	private List<Point> getMovimentosValidosPraDireitaCima(int linha, int coluna, List<Point> movimentosValidos) {
+	private List<Point> getMovimentosValidosPraDireitaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
 		int i = 1;
-		while(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha-i, coluna+i)) {
-			if(Tabuleiro.getInstance().casaEstaVazia(linha-i, coluna+i)) {
+		while(!tabuleiro.casaEstaForaDoTabuleiro(linha-i, coluna+i)) {
+			if(tabuleiro.casaEstaVazia(linha-i, coluna+i)) {
 				movimentosValidos.add(new Point(linha-i, coluna+i));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha-i, coluna+i)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha-i, coluna+i)) {
 					movimentosValidos.add(new Point(linha-i, coluna+i));
 				}
 				break;
@@ -71,13 +73,13 @@ public class Bispo extends Peca {
 		return movimentosValidos;
 	}
 	
-	private List<Point> getMovimentosValidosPraEsquerdaBaixo(int linha, int coluna, List<Point> movimentosValidos) {
+	private List<Point> getMovimentosValidosPraEsquerdaBaixo(Tabuleiro tabuleiro, int linha, int coluna, List<Point> movimentosValidos) {
 		int i = 1;
-		while(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha+i, coluna-i)) {
-			if(Tabuleiro.getInstance().casaEstaVazia(linha+i, coluna-i)) {
+		while(!tabuleiro.casaEstaForaDoTabuleiro(linha+i, coluna-i)) {
+			if(tabuleiro.casaEstaVazia(linha+i, coluna-i)) {
 				movimentosValidos.add(new Point(linha+i, coluna-i));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha+i, coluna-i)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha+i, coluna-i)) {
 					movimentosValidos.add(new Point(linha+i, coluna-i));
 				}
 				break;
@@ -87,13 +89,14 @@ public class Bispo extends Peca {
 		return movimentosValidos;
 	}
 	
-	private List<Point> getMovimentosValidosPraEsquerdaCima(int linha, int coluna, List<Point> movimentosValidos) {
+	private List<Point> getMovimentosValidosPraEsquerdaCima(Tabuleiro tabuleiro, 
+			int linha, int coluna, List<Point> movimentosValidos) {
 		int i = 1;
-		while(!Tabuleiro.getInstance().casaEstaForaDoTabuleiro(linha-i, coluna-i)) {
-			if(Tabuleiro.getInstance().casaEstaVazia(linha-i, coluna-i)) {
+		while(!tabuleiro.casaEstaForaDoTabuleiro(linha-i, coluna-i)) {
+			if(tabuleiro.casaEstaVazia(linha-i, coluna-i)) {
 				movimentosValidos.add(new Point(linha-i, coluna-i));
 			} else {
-				if(!Tabuleiro.getInstance().pecasSaoDaMesmaCor(linha, coluna, linha-i, coluna-i)) {
+				if(!tabuleiro.pecasSaoDaMesmaCor(linha, coluna, linha-i, coluna-i)) {
 					movimentosValidos.add(new Point(linha-i, coluna-i));
 				}
 				break;

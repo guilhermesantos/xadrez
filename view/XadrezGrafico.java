@@ -37,13 +37,13 @@ public class XadrezGrafico extends JPanel implements Observer {
 		this.jogo = jogo;
 		Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 		
-		tabuleiroGrafico = new TabuleiroGrafico();
+		tabuleiroGrafico = new TabuleiroGrafico(jogo);
 		tabuleiroGrafico.addMouseListener(listener);
 		add(tabuleiroGrafico);
 	}
 	
 	public void atualizaRepresentacaoGrafica() {
-		tabuleiroGrafico.atualizaTabuleiroGrafico();
+		tabuleiroGrafico.atualizaTabuleiroGrafico(jogo);
 	}
 	
 	@Override
@@ -55,17 +55,15 @@ public class XadrezGrafico extends JPanel implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jogo.iniciaNovoJogo();
-				tabuleiroGrafico.atualizaTabuleiroGrafico();
+				atualizaRepresentacaoGrafica();
 				dialog.dispose();
 			}
 		};
 
 		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
-			dialog.setTextoMensagem("Jogador branco venceu!");
-			System.out.println("Jogador branco venceu!");
+			dialog.setTextoMensagem("Pecas brancas venceram!");
 		} else if(arg.equals(EstadoJogo.TURNO_PRETO)){
-			dialog.setTextoMensagem("Jogador preto venceu!");
-			System.out.println("Jogador preto venceu!");
+			dialog.setTextoMensagem("Pecas pretas venceram!");
 		}
 
 		try {
@@ -90,7 +88,7 @@ public class XadrezGrafico extends JPanel implements Observer {
 			boolean casaSelecionadaEhUmMovimentoValido = jogo.getMovimentosValidos().contains(coordenadasCasaSelecionada);
 			if(casaSelecionadaEhUmMovimentoValido) {
 				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaSelecionada);
-				tabuleiroGrafico.atualizaTabuleiroGrafico();
+				atualizaRepresentacaoGrafica();
 				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
