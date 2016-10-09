@@ -86,8 +86,6 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					jogo.salvaJogo("jogo_salvo.dat");
-					//XadrezDialog dialog = new XadrezDialog(janelaExterna, "Salvar", "Jogo salvo.");
-					//dialog.setVisible(true);
 					Logger.getInstance().logar("Jogo salvo.");
 				} catch (FileNotFoundException e1) {
 					System.out.println("Arquivo nao encontrado");
