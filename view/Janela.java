@@ -137,6 +137,4 @@ public class Janela extends JFrame {
 		});
 		return botaoMultiplayer;
 	}
-
-
 }
