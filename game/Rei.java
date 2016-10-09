@@ -8,7 +8,8 @@ import java.util.List;
 import properties.Constantes;
 
 public class Rei extends Peca {
-	
+	private static final long serialVersionUID = -2185211226328468511L;
+
 	public Rei(Cor cor) {
 		super.cor = cor;
 		try {

@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import game.Tabuleiro;
 import game.Xadrez;
 
 public class TabuleiroGrafico extends JPanel {

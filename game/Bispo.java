@@ -8,7 +8,8 @@ import java.util.List;
 import properties.Constantes;
 
 public class Bispo extends Peca {
-	
+	private static final long serialVersionUID = 4350312580912868489L;
+
 	public Bispo(Cor cor) {
 		super.cor = cor;
 		try {

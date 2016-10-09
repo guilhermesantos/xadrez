@@ -8,7 +8,8 @@ import java.util.List;
 import properties.Constantes;
 
 public class Rainha extends Peca {
-	
+	private static final long serialVersionUID = 2775462149384433580L;
+
 	public Rainha(Cor cor) {
 		super.cor = cor;
 		try {

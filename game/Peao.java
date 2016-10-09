@@ -8,6 +8,7 @@ import java.util.List;
 import properties.Constantes;
 
 public class Peao extends Peca {
+	private static final long serialVersionUID = 2628878934548282814L;
 	boolean primeiroMovimento;
 	
 	public Peao(Cor cor) {

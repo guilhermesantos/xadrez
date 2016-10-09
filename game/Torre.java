@@ -8,7 +8,8 @@ import java.util.List;
 import properties.Constantes;
 
 public class Torre extends Peca {
-	
+	private static final long serialVersionUID = 5617838947587369041L;
+
 	public Torre(Cor cor) {
 		super.cor = cor;
 		try {

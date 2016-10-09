@@ -8,7 +8,8 @@ import java.util.List;
 import properties.Constantes;
 
 public class Cavalo extends Peca {
-	
+	private static final long serialVersionUID = 3031364078356413277L;
+
 	public Cavalo(Cor cor) {
 		super.cor = cor;
 		try {
