@@ -9,8 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,9 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public class NetworkDialog extends JDialog {
+import network.GerenciadorDeRede;
+
+public class NetworkDialog extends JDialog implements Observer {
 	private static final long serialVersionUID = 2274645232014160309L;
 
+//Atributos da interface grafica
+// ------------------------------------------------------//
 	private JPanel painelDeEntradaDeDadosDaConexao;
 	private JPanel painelConectando;
 	private JPanel painelAguardandoConexao;
@@ -36,8 +40,13 @@ public class NetworkDialog extends JDialog {
 	
 	private JTextField campoPortaConexao;
 	private JTextField campoIPDestino;
+	private JTextField campoNomeJogador;
 
 	private CardLayout layoutDoDialog;
+	
+//Atributos para conexao em rede	
+// ------------------------------------------------------//
+	private GerenciadorDeRede gerenciadorDeRede;
 	
 	private static final int LARGURA_DIALOG = 200;
 	private static final int ALTURA_DIALOG = 300;
@@ -72,7 +81,7 @@ public class NetworkDialog extends JDialog {
 		painelAguardandoConexao.add(labelAguardandoConexao, BorderLayout.CENTER);
 		
 		JButton botaoCancelar = new JButton("Cancelar");
-		botaoCancelar.addActionListener(criaActionListenerQueCancelarAguardandoConexao());
+		botaoCancelar.addActionListener(criaActionListenerQueCancelaAguardandoConexao());
 		painelAguardandoConexao.add(botaoCancelar, BorderLayout.SOUTH);
 		return painelAguardandoConexao;
 	}
@@ -105,6 +114,36 @@ public class NetworkDialog extends JDialog {
 		return painelDeDados;
 	}
 	
+	private JPanel constroiContainerDosCamposDaConexao() {
+			
+			JPanel containerCampos = new JPanel(new FlowLayout());
+	
+			JLabel labelNomeJogador = new JLabel("Nome do jogador: ");
+			campoNomeJogador = new JTextField(10);
+			
+			JLabel labelIPDestino = new JLabel("Ip de destino: ");
+			campoIPDestino = new JTextField(10);
+	
+			JLabel labelPortaConexao = new JLabel("Porta para fazer conexão: ");
+			campoPortaConexao = new JTextField(10);
+			
+			JLabel labelIPLocal = null;
+			labelIPLocal = new JLabel("IP local: " + GerenciadorDeRede.getIpLocal().getHostAddress());
+
+			containerCampos.add(labelNomeJogador);
+			containerCampos.add(campoNomeJogador);
+			
+			containerCampos.add(labelPortaConexao);
+			containerCampos.add(campoPortaConexao);
+
+			containerCampos.add(labelIPDestino);
+			containerCampos.add(campoIPDestino);
+	
+			containerCampos.add(labelIPLocal);
+			
+			return containerCampos;
+	}	
+	
 	private JPanel constroiContainerDeRadioButtons() {
 		radioHospedar = new JRadioButton("Hospedar jogo", false);
 		radioConectar = new JRadioButton("Conectar a  um jogo", false);
@@ -126,33 +165,7 @@ public class NetworkDialog extends JDialog {
 		return painelDeRadioButtons;
 	}
 
-	private JPanel constroiContainerDosCamposDaConexao() {
-		
-		JPanel containerCampos = new JPanel(new FlowLayout());
-		JLabel labelIPLocal = null;
-		
-		try {
-			labelIPLocal = new JLabel("IP local: " + getIP());
-		} catch (UnknownHostException e) {
-			System.out.println("Falhou ao descobrir o próprio IP");
-		}
-		
-		JLabel labelPortaConexao = new JLabel("Porta para fazer conexão: ");
-		campoPortaConexao = new JTextField(10);
-		campoIPDestino = new JTextField(10);
-
-		JLabel labelIPDestino = new JLabel("Ip de destino: ");
-		
-		containerCampos.add(labelPortaConexao);
-		containerCampos.add(campoPortaConexao);
-		
-		containerCampos.add(labelIPDestino);
-		containerCampos.add(campoIPDestino);
-
-		containerCampos.add(labelIPLocal);
-		
-		return containerCampos;
-	}
+	
 	
 	private JPanel constroiContainerDosBotoesDaConexao() {
 		JPanel containerDosBotoes = new JPanel(new FlowLayout());
@@ -168,10 +181,6 @@ public class NetworkDialog extends JDialog {
 		return containerDosBotoes;
 	}
 	
-	private String getIP() throws UnknownHostException {
-		return InetAddress.getLocalHost().getHostAddress();
-	}
-	
 	private ActionListener criaActionListenerQueFechaODialog() {
 		ActionListener listener = new ActionListener () {
 			@Override
@@ -183,17 +192,30 @@ public class NetworkDialog extends JDialog {
 	}
 	
 	private ActionListener criaActionListenerQueRealizaConexao() {
+		NetworkDialog gambiarra = this;
+		
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				gerenciadorDeRede = new GerenciadorDeRede(Integer
+						.parseInt(campoPortaConexao.toString()), campoNomeJogador.toString());
+
 				if(radioHospedar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelAguardandoConexao");
+					gerenciadorDeRede.estabeleceServidorLocal(gambiarra);
+					
 				} else if(radioConectar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelConectando");
 				}
+				
 			}
 		};
 		return listener;
+	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		
 	}
 	
 	private ActionListener criaActionListenerQueCancelaConexao() {
@@ -206,7 +228,7 @@ public class NetworkDialog extends JDialog {
 		return listener;	
 	}
 	
-	private ActionListener criaActionListenerQueCancelarAguardandoConexao() {
+	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
