@@ -119,7 +119,7 @@ public class Xadrez extends Observable implements Serializable {
 		objectOutput.close();
 	}
 	
-	public Xadrez carregaJogo() throws FileNotFoundException, IOException, ClassNotFoundException {
+	public Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {
 		Xadrez jogoCarregado;
 		FileInputStream fileInput = new FileInputStream("jogo_salvo.dat");
 		ObjectInputStream objectInput = new ObjectInputStream(fileInput);

@@ -1,6 +1,7 @@
 package network;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -13,11 +14,13 @@ import exceptions.ConexaoAindaNaoEstabelecidaException;
 
 public class GerenciadorDeRede extends Observable {
 	private int porta;
-	private ServerSocket servidorLocal;
-	private Socket clienteRemoto;
-	private Socket conexaoAoServidorRemoto;
-	private PrintStream escritorDaRede;
 	private String nome;
+
+	private ServerSocket servidorLocal;
+	private Socket computadorRemoto;
+	private PrintStream escritorDaRede;
+	private ObjectInputStream leitorDaRede;
+
 	private boolean conectado;
 	
 	//Esta classe usa serversocket para leitura, socket para escrita
@@ -45,17 +48,31 @@ public class GerenciadorDeRede extends Observable {
 	
 	public void conectaAoServidorRemoto(InetAddress ipRemoto) 
 			throws UnknownHostException, IOException {
-			conexaoAoServidorRemoto = new Socket(ipRemoto, porta);
-			escritorDaRede = new PrintStream(conexaoAoServidorRemoto.getOutputStream());
+			computadorRemoto = new Socket(ipRemoto, porta);
+			leitorDaRede = new ObjectInputStream(computadorRemoto.getInputStream());
+			escritorDaRede = new PrintStream(computadorRemoto.getOutputStream());
 	}
 	
 	public void fechaConexaoAoServidorRemoto() {
 		try {
-			conexaoAoServidorRemoto.close();
+			computadorRemoto.close();
 			conectado = false;
 		} catch (IOException e) {
 			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
 		}
+	}
+	
+	public Object leObjeto() throws ConexaoAindaNaoEstabelecidaException {
+		if(leitorDaRede != null) {
+			try {
+				return leitorDaRede.readObject();
+			} catch (ClassNotFoundException | IOException e) {
+				System.out.println("Erro ao recuperar objeto da rede");
+			}
+		} else {
+			throw new ConexaoAindaNaoEstabelecidaException();
+		}
+		return null;
 	}
 	
 	public void escreveObjeto(Object objeto) throws ConexaoAindaNaoEstabelecidaException {
@@ -92,7 +109,9 @@ public class GerenciadorDeRede extends Observable {
 		@Override
 		public void run() {
 			try {
-				clienteRemoto = servidorLocal.accept();
+				computadorRemoto = servidorLocal.accept();
+				leitorDaRede = new ObjectInputStream(computadorRemoto.getInputStream());
+				escritorDaRede = new PrintStream(computadorRemoto.getOutputStream());
 				setChanged();
 				notifyObservers();
 				conectado = true;

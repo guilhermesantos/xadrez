@@ -198,8 +198,9 @@ public class NetworkDialog extends JDialog implements Observer {
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
 				gerenciadorDeRede = new GerenciadorDeRede(Integer
-						.parseInt(campoPortaConexao.toString()), campoNomeJogador.toString());
+						.parseInt(campoPortaConexao.getText()), campoNomeJogador.toString());
 
 				if(radioHospedar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelAguardandoConexao");

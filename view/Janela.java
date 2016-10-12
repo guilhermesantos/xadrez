@@ -116,7 +116,7 @@ public class Janela extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					jogo = jogo.carregaJogo();
+					jogo = jogo.carregaJogo("jogo_salvo.dat");
 					jogo.addObserver(xadrezGrafico);
 					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 				} catch (FileNotFoundException e1) {
