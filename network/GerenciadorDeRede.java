@@ -20,7 +20,9 @@ public class GerenciadorDeRede extends Observable {
 	private Socket computadorRemoto;
 	private PrintStream escritorDaRede;
 	private ObjectInputStream leitorDaRede;
-
+	
+	private Thread threadDeConexao;
+	
 	private boolean conectado;
 	
 	//Esta classe usa serversocket para leitura, socket para escrita
@@ -38,11 +40,15 @@ public class GerenciadorDeRede extends Observable {
 			System.out.println("Erro ao estabelecer o servidor no programa " + nome);
 		}	
 		ReceptorDeConexoes receptor = new ReceptorDeConexoes();
-		new Thread(receptor).start();
+		threadDeConexao = new Thread(receptor);
+		threadDeConexao.start();
 	}
 	
 	public void fechaServidorLocal() throws IOException {
 		servidorLocal.close();
+		if(threadDeConexao != null && threadDeConexao.isAlive()) {
+			threadDeConexao.interrupt();
+		}
 		conectado = false;
 	}
 	

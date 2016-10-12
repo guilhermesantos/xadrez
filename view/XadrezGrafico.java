@@ -94,7 +94,7 @@ public class XadrezGrafico extends JPanel implements Observer {
 
 				} catch (ClicouNoMeioDoNadaException e1) {
 					
-					Logger.getInstance().logar("O jogador clicou no meio do nada.");
+					//Logger.getInstance().logar("O jogador clicou no meio do nada.");
 					jogo.getMovimentosValidos().clear();
 					tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 					
