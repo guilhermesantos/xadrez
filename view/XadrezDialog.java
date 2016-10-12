@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import exceptions.BotaoNaoTemListenerException;
 import properties.Constantes;
 
 public class XadrezDialog extends JDialog {
@@ -17,15 +16,15 @@ public class XadrezDialog extends JDialog {
 	private JButton botao;
 	private JLabel labelMensagem;
 	
-	
 	public XadrezDialog(Window window, String tituloDaJanela) {
 		super(window, tituloDaJanela);
+
 		super.setLayout(new BorderLayout());
 		super.setSize(200, 100);
 		super.setLocation(Constantes.LARGURA_JANELA/2, Constantes.ALTURA_JANELA/2);
 		
 		botao = new JButton("Ok");
-		fazBotaoFecharODialog();
+		botao.addActionListener(criaActionListenerQueFechaODialog());
 
 		labelMensagem = new JLabel();
 		super.add(botao, BorderLayout.SOUTH);
@@ -47,15 +46,14 @@ public class XadrezDialog extends JDialog {
 		botao.addActionListener(acaoDoBotao);
 	}
 	
-	private void fazBotaoFecharODialog() {
-		botao.addActionListener(
-				new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				}
-		);
+	private ActionListener criaActionListenerQueFechaODialog() {
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		};
+		return listener;
 	}
 	
 	public void setTextoBotao(String textoBotao) {
@@ -67,10 +65,7 @@ public class XadrezDialog extends JDialog {
 		super.add(labelMensagem, BorderLayout.NORTH);
 	}
 	
-	public void substituiActionListenerDoBotao(ActionListener novoListener) throws BotaoNaoTemListenerException {
-		if(botao.getActionListeners().length == 0) {
-			throw new BotaoNaoTemListenerException();
-		} 
+	public void substituiActionListenerDoBotao(ActionListener novoListener) {
 		botao.removeActionListener(botao.getActionListeners()[0]);
 		botao.addActionListener(novoListener);
 	}

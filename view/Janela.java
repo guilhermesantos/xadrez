@@ -22,6 +22,7 @@ public class Janela extends JFrame {
 	
 	private Xadrez jogo;
 	private XadrezGrafico xadrezGrafico;
+	private JPanel containerDosBotoes;
 	private JButton botaoReiniciar;
 	private JButton botaoSalvar;
 	private JButton botaoMultiplayer;
@@ -31,27 +32,10 @@ public class Janela extends JFrame {
 
 	public Janela(String titulo, int largura, int altura) {
 		super(titulo);
-		super.setSize(largura, (int)(altura*1.07));
-		super.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		BorderLayout layout = new BorderLayout();
-		super.setLayout(layout);
-		janelaExterna = SwingUtilities.getWindowAncestor(this);
+		configuraJanela(largura, altura);
 		
-		JPanel container = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		
-		botaoReiniciar = criaBotaoReiniciar();
-		container.add(botaoReiniciar);
-		
-		botaoSalvar = criaBotaoSalvar();
-		container.add(botaoSalvar);
-		
-		botaoCarregar = criaBotaoCarregar();
-		container.add(botaoCarregar);
-		
-		botaoMultiplayer = criaBotaoMultiplayer();
-		container.add(botaoMultiplayer);
-		super.add(container, BorderLayout.NORTH);
-		
+		containerDosBotoes = criaContainerDosBotoes();
+		super.add(containerDosBotoes, BorderLayout.NORTH);
 		
 		jogo = new Xadrez();
 		xadrezGrafico = new XadrezGrafico(jogo);
@@ -59,6 +43,32 @@ public class Janela extends JFrame {
 		super.add(xadrezGrafico, BorderLayout.CENTER);
 		
 		super.add(Logger.getInstance(), BorderLayout.SOUTH);
+	}
+	
+	private JPanel criaContainerDosBotoes() {
+		JPanel containerDosBotoes = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		
+		botaoReiniciar = criaBotaoReiniciar();
+		containerDosBotoes.add(botaoReiniciar);
+		
+		botaoSalvar = criaBotaoSalvar();
+		containerDosBotoes.add(botaoSalvar);
+		
+		botaoCarregar = criaBotaoCarregar();
+		containerDosBotoes.add(botaoCarregar);
+		
+		botaoMultiplayer = criaBotaoMultiplayer();
+		containerDosBotoes.add(botaoMultiplayer);
+		
+		return containerDosBotoes;
+	}
+
+	private void configuraJanela(int largura, int altura) {
+		super.setSize(largura, (int)(altura*1.07));
+		super.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		super.setLayout(new BorderLayout());
+		super.setResizable(false);
+		janelaExterna = SwingUtilities.getWindowAncestor(this);
 	}
 	
 	private JButton criaBotaoReiniciar() {
@@ -69,8 +79,8 @@ public class Janela extends JFrame {
 		new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				jogo.iniciaNovoJogo();
-				xadrezGrafico.atualizaRepresentacaoGrafica();
+				jogo = new Xadrez(xadrezGrafico);
+				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 			}
 		});
 		return botaoReiniciar;
@@ -107,8 +117,8 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					jogo = jogo.carregaJogo();
-					xadrezGrafico.setJogo(jogo);
-					xadrezGrafico.atualizaRepresentacaoGrafica();
+					jogo.addObserver(xadrezGrafico);
+					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 				} catch (FileNotFoundException e1) {
 					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");
 				} catch (IOException e1) {
@@ -125,16 +135,16 @@ public class Janela extends JFrame {
 	private JButton criaBotaoMultiplayer() {
 		JButton botaoMultiplayer = new JButton("Multiplayer");
 		botaoMultiplayer.setBackground(Color.WHITE);
+		NetworkDialog networkDialog = new NetworkDialog(janelaExterna);
 		
-		botaoMultiplayer.addActionListener(
-		new ActionListener() {
+		ActionListener listenerQueFazAbrirONetworkDialog = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				XadrezDialog dialog = new XadrezDialog(janelaExterna, 
-						"Multiplayer", "Aguardando conexão", "Cancelar");
-				dialog.setVisible(true);
+				networkDialog.setVisible(true);
 			}
-		});
+		};
+		
+		botaoMultiplayer.addActionListener(listenerQueFazAbrirONetworkDialog);
 		return botaoMultiplayer;
 	}
 }

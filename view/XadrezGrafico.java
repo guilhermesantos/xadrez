@@ -6,14 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import exceptions.BotaoNaoTemListenerException;
 import exceptions.ClicouNoMeioDoNadaException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
@@ -39,71 +37,72 @@ public class XadrezGrafico extends JPanel implements Observer {
 		
 		tabuleiroGrafico = new TabuleiroGrafico(jogo);
 		tabuleiroGrafico.addMouseListener(listener);
-		add(tabuleiroGrafico);
+		super.add(tabuleiroGrafico);
 	}
 	
-	public void atualizaRepresentacaoGrafica() {
-		tabuleiroGrafico.atualizaTabuleiroGrafico(jogo);
+	public void substituiJogoEAtualizaGraficos(Xadrez jogo) {
+		this.jogo = jogo;
+		tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		XadrezDialog dialog = new XadrezDialog
+		
+		XadrezDialog dialogDeFimDeJogo = new XadrezDialog
 				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
-
-		ActionListener fazBotaoReiniciarOJogo = new ActionListener() {
+		
+		ActionListener listenerQueFazOBotaoReiniciarOJogo = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				jogo.iniciaNovoJogo();
-				atualizaRepresentacaoGrafica();
-				dialog.dispose();
+				Xadrez novoJogo = new Xadrez();
+				substituiJogoEAtualizaGraficos(novoJogo);
+				dialogDeFimDeJogo.dispose();
 			}
 		};
+		
+		dialogDeFimDeJogo.substituiActionListenerDoBotao(listenerQueFazOBotaoReiniciarOJogo);
 
 		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
-			dialog.setTextoMensagem("Pecas brancas venceram!");
+			dialogDeFimDeJogo.setTextoMensagem("Pecas brancas venceram!");
 		} else if(arg.equals(EstadoJogo.TURNO_PRETO)){
-			dialog.setTextoMensagem("Pecas pretas venceram!");
-		}
-
-		try {
-			dialog.substituiActionListenerDoBotao(fazBotaoReiniciarOJogo);
-		} catch (BotaoNaoTemListenerException e1) {
-			System.out.println("Problema ao substituir o action listener do botão");
+			dialogDeFimDeJogo.setTextoMensagem("Pecas pretas venceram!");
 		}
 		
-		dialog.setVisible(true);
-	}
-	
-	public void setJogo(Xadrez jogo) {
-		this.jogo = jogo;
+		dialogDeFimDeJogo.setVisible(true);
 	}
 	
 	private class XadrezMouseListener implements MouseListener {
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			Point coordenadasCasaSelecionada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
+			Point coordenadasCasaClicada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
 			
-			boolean casaSelecionadaEhUmMovimentoValido = jogo.getMovimentosValidos().contains(coordenadasCasaSelecionada);
-			if(casaSelecionadaEhUmMovimentoValido) {
-				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaSelecionada);
-				atualizaRepresentacaoGrafica();
+			boolean casaClicadaEhUmMovimentoValido = jogo.getMovimentosValidos()
+					.contains(coordenadasCasaClicada);
+			
+			if(casaClicadaEhUmMovimentoValido) {
+				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaClicada);
+				tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);;
 				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
+			
 			} else {
 				//Clicou em outra peca ou clicou no meio do nada
 				try {
-					List<Point> movimentosValidos = jogo.selecionaPeca(coordenadasCasaSelecionada);
-					tabuleiroGrafico.destacaCasas(movimentosValidos);
+					
+					jogo.selecionaPeca(coordenadasCasaClicada);
+					tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 
 				} catch (ClicouNoMeioDoNadaException e1) {
+					
 					Logger.getInstance().logar("O jogador clicou no meio do nada.");
+					jogo.getMovimentosValidos().clear();
+					tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
+					
 				} catch (PecaNaoPertenceAoJogadorException e2) {
 					Logger.getInstance().logar("A peca selecionada nao pertence ao jogador.");
 				} catch (NaoHaMovimentosValidosException e3) {
 					Logger.getInstance().logar("Nao há movimentos válidos para a peça selecionada.");
 				} 
-							
 			}
 		}
 

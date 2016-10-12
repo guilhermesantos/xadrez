@@ -30,7 +30,7 @@ public class Peao extends Peca {
 		return cor.equals(Cor.PRETO) ? Constantes.ENDERECO_IMAGEM_PEAO_PRETO :
 			 Constantes.ENDERECO_IMAGEM_PEAO_BRANCO;
 	}
-
+	
 	@Override
 	public List<Point> getMovimentosValidos(Tabuleiro tabuleiro, int linha, int coluna) {
 		List<Point> listaDeMovimentosValidos = new ArrayList<Point>();

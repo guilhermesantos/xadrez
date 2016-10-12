@@ -15,7 +15,6 @@ public class Peer implements Runnable {
 	private ServerSocket servidorLocal;
 	private Socket clienteRemoto;
 	private Socket conexaoAoServidorRemoto;
-	private Scanner leitorDaRede;
 	private PrintStream escritorDaRede;
 	private String nome;
 	private InetAddress ipLocal;
@@ -29,6 +28,7 @@ public class Peer implements Runnable {
 		} catch (UnknownHostException e) {
 			System.out.println(nome + " falhou ao descobrir o próprio IP.");
 		}
+		estabeleceServidorLocal();
 	}
 	
 	public void estabeleceServidorLocal() {
@@ -70,18 +70,10 @@ public class Peer implements Runnable {
 	public void run() {
 		try {
 			clienteRemoto = servidorLocal.accept();
-			if(clienteRemoto == null) {
-				System.out.println("O SOCKET DE LEITURA FICOU NUUUUUUUUUUUULLLLLLLLL");
-			}
-			leitorDaRede = new Scanner(clienteRemoto.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Erro ao esperar um cliente conectar ao servidor.");
 		}
 		System.out.println("Cliente conectado ao programa " + nome);
-
-		while(leitorDaRede.hasNextLine()) {
-			System.out.println(leitorDaRede.nextLine());
-		}
 	}
 	
 	public int getPortaDeEscuta() {
