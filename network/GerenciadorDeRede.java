@@ -47,6 +47,7 @@ public class GerenciadorDeRede extends Observable {
 	public void fechaServidorLocal() throws IOException {
 		servidorLocal.close();
 		if(threadDeConexao != null && threadDeConexao.isAlive()) {
+			System.out.println("interrompendo thread");
 			threadDeConexao.interrupt();
 		}
 		conectado = false;
