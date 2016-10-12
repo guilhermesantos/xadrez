@@ -38,10 +38,24 @@ public class GerenciadorDeRede extends Observable {
 		new Thread(receptor).start();
 	}
 	
+	public void fechaServidorLocal() throws IOException {
+		servidorLocal.close();
+		conectado = false;
+	}
+	
 	public void conectaAoServidorRemoto(InetAddress ipRemoto) 
 			throws UnknownHostException, IOException {
 			conexaoAoServidorRemoto = new Socket(ipRemoto, porta);
 			escritorDaRede = new PrintStream(conexaoAoServidorRemoto.getOutputStream());
+	}
+	
+	public void fechaConexaoAoServidorRemoto() {
+		try {
+			conexaoAoServidorRemoto.close();
+			conectado = false;
+		} catch (IOException e) {
+			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
+		}
 	}
 	
 	public void escreveObjeto(Object objeto) throws ConexaoAindaNaoEstabelecidaException {
@@ -60,20 +74,6 @@ public class GerenciadorDeRede extends Observable {
 		}
 	}
 	
-	public void fechaConexaoAoServidorRemoto() {
-		try {
-			conexaoAoServidorRemoto.close();
-			conectado = false;
-		} catch (IOException e) {
-			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
-		}
-	}
-	
-	public void fechaServidorLocal() throws IOException {
-		servidorLocal.close();
-		conectado = false;
-	}
-
 	public static InetAddress getIpLocal() {
 		InetAddress ipLocal = null;
 		try {

@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -215,7 +216,11 @@ public class NetworkDialog extends JDialog implements Observer {
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		
+		try {
+			gerenciadorDeRede.fechaServidorLocal();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private ActionListener criaActionListenerQueCancelaConexao() {
