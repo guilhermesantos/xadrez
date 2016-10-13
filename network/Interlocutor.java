@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Observable;
 
-public class Interlocutor {
+public class Interlocutor extends Observable {
 	private Socket conexao;
 	private String nome;
 	private ObjectInputStream entrada;
 	private PrintStream saida;
+	private Object mensagemLida;
 	
 	public Interlocutor(Socket conexao) {
 		super();
@@ -24,6 +26,8 @@ public class Interlocutor {
 		} catch (IOException e) {
 			System.out.println("Erro ao criar canal de saida");
 		}
+		EscutadorDeMensagens escutador = new EscutadorDeMensagens();
+		new Thread(escutador).run();
 	}
 	
 	public Socket getConexao() {
@@ -42,10 +46,6 @@ public class Interlocutor {
 		this.nome = nome;
 	}
 
-	public PrintStream getSaida() {
-		return saida;
-	}
-	
 	public void escreveMensagem(Object mensagem) {
 		saida.print(mensagem);
 	}
@@ -60,8 +60,17 @@ public class Interlocutor {
 				marcacaoAtual = System.nanoTime();
 				delta = marcacaoAtual - marcacaoAnterior;
 				if(delta < 1e9) {
-					
+					try {
+						System.out.println("Tentando ler mensagem");
+						mensagemLida = entrada.readObject();
+						setChanged();
+						notifyObservers(mensagemLida);
+					} catch (ClassNotFoundException e) {
+					} catch (IOException e) {
+						System.out.println("Nao recebeu nada.");
+					}
 				}
+				marcacaoAnterior = marcacaoAtual;
 			}
 		}
 	}

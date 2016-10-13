@@ -50,7 +50,7 @@ public class GerenciadorDeRede extends Observable {
 			try {
 				interlocutor = new Interlocutor(servidorLocal.accept());
 				setChanged();
-				notifyObservers();
+				notifyObservers(interlocutor);
 			} catch (IOException e) {
 				System.out.println("Conexao cancelada antes da conexão de um cliente.");
 			}
@@ -87,27 +87,6 @@ public class GerenciadorDeRede extends Observable {
 		}
 	}
 	
-	public Object leObjeto() throws ConexaoAindaNaoEstabelecidaException {
-		if(leitorDaRede != null) {
-			try {
-				return leitorDaRede.readObject();
-			} catch (ClassNotFoundException | IOException e) {
-				System.out.println("Erro ao recuperar objeto da rede");
-			}
-		} else {
-			throw new ConexaoAindaNaoEstabelecidaException();
-		}
-		return null;
-	}
-	
-	public void escreveObjeto(Object objeto) throws ConexaoAindaNaoEstabelecidaException {
-		if(escritorDaRede != null) {
-			escritorDaRede.print(objeto);
-		} else {
-			throw new ConexaoAindaNaoEstabelecidaException();
-		}
-	}
-	
 	public void escreveMensagem(String mensagem) throws ConexaoAindaNaoEstabelecidaException {
 		if(escritorDaRede != null) {
 			escritorDaRede.println(nome + " diz: " + mensagem);
@@ -124,9 +103,5 @@ public class GerenciadorDeRede extends Observable {
 			System.out.println("Falhou ao descobrir o próprio IP.");
 		}
 		return ipLocal;
-	}
-
-	public Interlocutor getInterlocutor() {
-		return interlocutor;
 	}
 }

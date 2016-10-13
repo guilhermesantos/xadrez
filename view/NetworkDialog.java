@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import network.GerenciadorDeRede;
+import network.Interlocutor;
 
 public class NetworkDialog extends JDialog implements Observer {
 	private static final long serialVersionUID = 2274645232014160309L;
@@ -49,6 +50,7 @@ public class NetworkDialog extends JDialog implements Observer {
 //Atributos para conexao em rede	
 // ------------------------------------------------------//
 	private GerenciadorDeRede gerenciadorDeRede;
+	private Interlocutor interlocutor;
 	
 	private static final int LARGURA_DIALOG = 200;
 	private static final int ALTURA_DIALOG = 300;
@@ -74,6 +76,7 @@ public class NetworkDialog extends JDialog implements Observer {
 		super.setModal(true);
 		layoutDoDialog = new CardLayout();
 		super.setLayout(layoutDoDialog);
+		this.interlocutor = null;
 	}
 	
 	private JPanel constroiPainelAguardandoConexao() {
@@ -207,7 +210,6 @@ public class NetworkDialog extends JDialog implements Observer {
 				} else if(radioConectar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelConectando");
 				}
-				
 			}
 		};
 		return listener;
@@ -217,13 +219,14 @@ public class NetworkDialog extends JDialog implements Observer {
 		gerenciadorDeRede.estabeleceServidorLocal(this);
 	}
 	
-	
 	@Override
 	//Invocado quando o cliente conecta ao servidor local
 	public void update(Observable o, Object arg) {
-		XadrezDialog dialog = new XadrezDialog(SwingUtilities.getWindowAncestor(this),
-				"Conectado ao jogador ");
-		dialog.setVisible(true);
+		this.interlocutor = (Interlocutor)arg;
+		XadrezDialog xadrezDialog = new XadrezDialog(SwingUtilities.getWindowAncestor(this),
+				"Conectado ao jogador " + interlocutor.getNome());
+		xadrezDialog.setVisible(true);
+		this.dispose();
 	}
 	
 	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {
@@ -266,5 +269,9 @@ public class NetworkDialog extends JDialog implements Observer {
 			}
 		};
 		return radioButtonListener;
+	}
+
+	public Interlocutor getInterlocutor() {
+		return interlocutor;
 	}
 }
