@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import network.GerenciadorDeRede;
 
@@ -165,8 +166,6 @@ public class NetworkDialog extends JDialog implements Observer {
 		
 		return painelDeRadioButtons;
 	}
-
-	
 	
 	private JPanel constroiContainerDosBotoesDaConexao() {
 		JPanel containerDosBotoes = new JPanel(new FlowLayout());
@@ -193,8 +192,7 @@ public class NetworkDialog extends JDialog implements Observer {
 	}
 	
 	private ActionListener criaActionListenerQueRealizaConexao() {
-		NetworkDialog gambiarra = this;
-		
+
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -204,7 +202,7 @@ public class NetworkDialog extends JDialog implements Observer {
 
 				if(radioHospedar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelAguardandoConexao");
-					gerenciadorDeRede.estabeleceServidorLocal(gambiarra);
+					iniciaAguardandoConexao();
 					
 				} else if(radioConectar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelConectando");
@@ -215,13 +213,33 @@ public class NetworkDialog extends JDialog implements Observer {
 		return listener;
 	}
 	
+	public void iniciaAguardandoConexao() {
+		gerenciadorDeRede.estabeleceServidorLocal(this);
+	}
+	
+	
 	@Override
+	//Invocado quando o cliente conecta ao servidor local
 	public void update(Observable o, Object arg) {
-		try {
-			gerenciadorDeRede.fechaServidorLocal();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		XadrezDialog dialog = new XadrezDialog(SwingUtilities.getWindowAncestor(this),
+				"Conectado ao jogador ");
+		dialog.setVisible(true);
+	}
+	
+	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					gerenciadorDeRede.fechaServidorLocal();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
+				layoutDoDialog.show(getContentPane(), "painelDeEntradaDeDadosDaConexao");
+			}
+		};
+		return listener;
 	}
 	
 	private ActionListener criaActionListenerQueCancelaConexao() {
@@ -232,16 +250,6 @@ public class NetworkDialog extends JDialog implements Observer {
 			}
 		};
 		return listener;	
-	}
-	
-	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {
-		ActionListener listener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				layoutDoDialog.show(getContentPane(), "painelDeEntradaDeDadosDaConexao");
-			}
-		};
-		return listener;
 	}
 	
 	private ItemListener criaRadioButtonListener() {

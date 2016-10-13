@@ -17,53 +17,71 @@ public class GerenciadorDeRede extends Observable {
 	private String nome;
 
 	private ServerSocket servidorLocal;
-	private Socket computadorRemoto;
 	private PrintStream escritorDaRede;
 	private ObjectInputStream leitorDaRede;
 	
 	private Thread threadDeConexao;
 	
-	private boolean conectado;
+	private Interlocutor interlocutor;
 	
 	//Esta classe usa serversocket para leitura, socket para escrita
 	public GerenciadorDeRede(int porta, String nome) {
 		this.nome = nome;
 		this.porta = porta;
-		conectado = false;
 	}
 	
 	public void estabeleceServidorLocal(Observer observer) {
 		try {
 			servidorLocal = new ServerSocket(porta);
+			servidorLocal.setReuseAddress(true);
 			addObserver(observer);
 		} catch (IOException e) {
 			System.out.println("Erro ao estabelecer o servidor no programa " + nome);
 		}	
+		
 		ReceptorDeConexoes receptor = new ReceptorDeConexoes();
 		threadDeConexao = new Thread(receptor);
 		threadDeConexao.start();
 	}
 	
+	private class ReceptorDeConexoes implements Runnable {
+		@Override
+		public void run() {
+			try {
+				interlocutor = new Interlocutor(servidorLocal.accept());
+				setChanged();
+				notifyObservers();
+			} catch (IOException e) {
+				System.out.println("Conexao cancelada antes da conexão de um cliente.");
+			}
+		}
+	}
+	
 	public void fechaServidorLocal() throws IOException {
 		servidorLocal.close();
-		if(threadDeConexao != null && threadDeConexao.isAlive()) {
-			System.out.println("interrompendo thread");
-			threadDeConexao.interrupt();
+		if(leitorDaRede != null) {
+			leitorDaRede.close();
 		}
-		conectado = false;
+		if(escritorDaRede != null) {
+			escritorDaRede.close();
+		}
+		if(threadDeConexao != null && threadDeConexao.isAlive()) {
+			try {
+				threadDeConexao.join(500);
+			} catch (InterruptedException e) {
+				System.out.println("Erro ao matar a thread que recebe conexões");
+			}
+		}
 	}
 	
 	public void conectaAoServidorRemoto(InetAddress ipRemoto) 
 			throws UnknownHostException, IOException {
-			computadorRemoto = new Socket(ipRemoto, porta);
-			leitorDaRede = new ObjectInputStream(computadorRemoto.getInputStream());
-			escritorDaRede = new PrintStream(computadorRemoto.getOutputStream());
+			interlocutor = new Interlocutor(new Socket(ipRemoto, porta));
 	}
 	
 	public void fechaConexaoAoServidorRemoto() {
 		try {
-			computadorRemoto.close();
-			conectado = false;
+			interlocutor.getConexao().close();
 		} catch (IOException e) {
 			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
 		}
@@ -108,24 +126,7 @@ public class GerenciadorDeRede extends Observable {
 		return ipLocal;
 	}
 
-	public boolean isConectado() {
-		return conectado;
+	public Interlocutor getInterlocutor() {
+		return interlocutor;
 	}
-	
-	private class ReceptorDeConexoes implements Runnable {
-		@Override
-		public void run() {
-			try {
-				computadorRemoto = servidorLocal.accept();
-				leitorDaRede = new ObjectInputStream(computadorRemoto.getInputStream());
-				escritorDaRede = new PrintStream(computadorRemoto.getOutputStream());
-				setChanged();
-				notifyObservers();
-				conectado = true;
-			} catch (IOException e) {
-				System.out.println("Erro ao esperar um cliente conectar ao servidor.");
-			}
-		}
-	}
-		
 }

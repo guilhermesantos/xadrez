@@ -141,6 +141,7 @@ public class Janela extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				networkDialog.setVisible(true);
+
 			}
 		};
 		

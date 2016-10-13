@@ -2,3 +2,6 @@
 /NetworkManager.class
 /GerenciadorDeRede.class
 /GerenciadorDeRede$ReceptorDeConexoes.class
+/Interlocutor.class
+/Interlocutor$escutadorDeMensagens.class
+/Interlocutor$EscutadorDeMensagens.class
