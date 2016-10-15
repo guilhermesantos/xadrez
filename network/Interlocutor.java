@@ -16,7 +16,7 @@ public class Interlocutor extends Observable {
 	public Interlocutor(Socket conexao) {
 		super();
 		this.conexao = conexao;
-		/*try {
+		try {
 			entrada = new ObjectInputStream(conexao.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Erro ao criar canal de entrada");
@@ -27,7 +27,7 @@ public class Interlocutor extends Observable {
 			System.out.println("Erro ao criar canal de saida");
 		}
 		EscutadorDeMensagens escutador = new EscutadorDeMensagens();
-		new Thread(escutador).run();*/
+		new Thread(escutador).run();
 	}
 	
 	public Socket getConexao() {
@@ -49,9 +49,10 @@ public class Interlocutor extends Observable {
 		public void run() {
 			long marcacaoAtual = System.currentTimeMillis();
 			while(true) {
-				marcacaoAtual = System.nanoTime();
+				marcacaoAtual = System.currentTimeMillis();
 				delta = marcacaoAtual - marcacaoAnterior;
-				if(delta < 1e9) {
+				if(delta < 1e3) {
+					System.out.println("Tentando ler!");
 					try {
 						System.out.println("Tentando ler mensagem");
 						mensagemLida = (Mensagem)entrada.readObject();

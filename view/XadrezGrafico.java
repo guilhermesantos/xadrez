@@ -32,16 +32,18 @@ public class XadrezGrafico extends JPanel implements Observer {
 		listener = new XadrezMouseListener();
 		super.addMouseListener(listener);
 		
-		this.jogo = jogo;
+		tabuleiroGrafico = new TabuleiroGrafico();
+		tabuleiroGrafico.addMouseListener(listener);
+
+		substituiJogoEAtualizaGraficos(jogo);
 		Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 		
-		tabuleiroGrafico = new TabuleiroGrafico(jogo);
-		tabuleiroGrafico.addMouseListener(listener);
 		super.add(tabuleiroGrafico);
 	}
 	
 	public void substituiJogoEAtualizaGraficos(Xadrez jogo) {
 		this.jogo = jogo;
+		jogo.addObserver(this);
 		tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 	}
 	
@@ -50,12 +52,11 @@ public class XadrezGrafico extends JPanel implements Observer {
 		
 		DialogComMensagemEBotao dialogDeFimDeJogo = new DialogComMensagemEBotao
 				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
-		XadrezGrafico gambiarra = this;
 		
 		ActionListener listenerQueFazOBotaoReiniciarOJogo = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Xadrez novoJogo = new Xadrez(gambiarra);
+				Xadrez novoJogo = new Xadrez();
 				substituiJogoEAtualizaGraficos(novoJogo);
 				dialogDeFimDeJogo.dispose();
 			}
@@ -83,7 +84,7 @@ public class XadrezGrafico extends JPanel implements Observer {
 			
 			if(casaClicadaEhUmMovimentoValido) {
 				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaClicada);
-				tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);;
+				tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 			
 			} else {

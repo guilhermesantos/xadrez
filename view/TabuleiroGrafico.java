@@ -18,10 +18,9 @@ public class TabuleiroGrafico extends JPanel {
 	private JPanel [][]casas;
 	private List<Point> casasDestacadas;
 	
-	public TabuleiroGrafico(Xadrez jogo) {
+	public TabuleiroGrafico() {
 		super.setLayout(new GridLayout(8, 8));
 		constroiEColoreAsCasas();
-		atualizaTabuleiroGraficoInteiro(jogo);
 	}
 	
 	private void constroiEColoreAsCasas() {

@@ -44,7 +44,6 @@ public class Janela extends JFrame {
 		
 		jogo = new Xadrez();
 		xadrezGrafico = new XadrezGrafico(jogo);
-		jogo.addObserver(xadrezGrafico);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
 		
 		super.add(Logger.getInstance(), BorderLayout.SOUTH);
@@ -84,7 +83,7 @@ public class Janela extends JFrame {
 		new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				jogo = new Xadrez(xadrezGrafico);
+				jogo = new Xadrez();
 				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 			}
 		});
@@ -122,7 +121,6 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					jogo = jogo.carregaJogo("jogo_salvo.dat");
-					jogo.addObserver(xadrezGrafico);
 					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 				} catch (FileNotFoundException e1) {
 					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");

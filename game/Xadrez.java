@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 import exceptions.ClicouNoMeioDoNadaException;
 import exceptions.NaoHaMovimentosValidosException;
@@ -46,11 +45,6 @@ public class Xadrez extends Observable implements Serializable {
 		estadoJogo = EstadoJogo.TURNO_BRANCO;
 		coordenadasPecaSelecionada = null;
 		movimentosValidos = new ArrayList<Point>();
-	}
-
-	public Xadrez(Observer observer) {
-		this();
-		super.addObserver(observer);
 	}
 
 	public List<Point> selecionaPeca(Point coordenadas) throws PecaNaoPertenceAoJogadorException, NaoHaMovimentosValidosException, ClicouNoMeioDoNadaException {
