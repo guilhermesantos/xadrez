@@ -62,7 +62,6 @@ public class DialogComMensagemEBotao extends JDialog {
 	}
 	
 	private void configuraDialog(int largura, int altura) {
-		System.out.println("Esta colocando o tamanho no dialog!");
 		super.setSize(largura, altura);
 		super.setLayout(new BorderLayout());
 		super.setSize(200, 100);
