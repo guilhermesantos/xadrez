@@ -84,6 +84,7 @@ public class NetworkDialog extends JDialog implements Observer {
 		
 		painelConectandoFuncionou = new PainelComMensagens("Conectou ao servidor!");
 		painelConectandoFuncionou.colocaActionListenerNoBotao(criaActionListenerQueFechaODialog());
+		painelConectandoFuncionou.mudaTextoDoBotao("Fechar");
 		super.add(painelConectandoFuncionou, "painelConectandoFuncionou");
 		
 		painelAguardandoConexao = new PainelComMensagens("Aguardando conexao...");
@@ -96,6 +97,7 @@ public class NetworkDialog extends JDialog implements Observer {
 		
 		painelAguardandoConexaoFuncionou = new PainelComMensagens("Cliente detectado!");
 		painelAguardandoConexaoFuncionou.colocaActionListenerNoBotao(criaActionListenerQueFechaODialog());
+		painelAguardandoConexaoFuncionou.mudaTextoDoBotao("Fechar");
 		super.add(painelAguardandoConexaoFuncionou, "painelAguardandoConexaoFuncionou");
 	}
 	
@@ -207,7 +209,9 @@ public class NetworkDialog extends JDialog implements Observer {
 					iniciaConexaoComoServidor();
 					
 				} else if(radioConectar.isSelected()) {
+					System.out.println("Vai mudar para o painel que avisa que o cliente esta conectando");
 					layoutDoDialog.show(getContentPane(), "painelConectando");
+					System.out.println("Mudou o painel!");
 					iniciaConexaoComoCliente();
 				}
 			}
@@ -225,14 +229,9 @@ public class NetworkDialog extends JDialog implements Observer {
 	}
 	
 	public void iniciaConexaoComoCliente() {
-		try {
-			System.out.println("Vai iniciar conexao como cliente");
-			gerenciadorDeRede.iniciaConexaoComoCliente(campoIPRemoto.getText(), 
-					Integer.parseInt(campoPortaConexao.getText()));
-		} catch(IOException e) {
-			System.out.println("Conectando falhou!");
-			layoutDoDialog.show(getContentPane(), "painelConectandoFalhou");
-		}
+		System.out.println("Vai iniciar conexao como cliente");
+		gerenciadorDeRede.iniciaConexaoComoCliente(campoIPRemoto.getText(), 
+				Integer.parseInt(campoPortaConexao.getText()));
 	}
 	
 	@Override
@@ -255,11 +254,11 @@ public class NetworkDialog extends JDialog implements Observer {
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
+				/*try {
 					gerenciadorDeRede.fechaServidorLocal();
 				} catch (IOException e1) {
 					e1.printStackTrace();
-				}
+				}*/
 
 				layoutDoDialog.show(getContentPane(), "painelDeEntradaDeDadosDaConexao");
 			}

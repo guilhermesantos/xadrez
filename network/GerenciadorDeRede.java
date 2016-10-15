@@ -2,17 +2,12 @@ package network;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
-public class GerenciadorDeRede extends Observable {
-	private int porta;
-	private String nome;
+public class GerenciadorDeRede extends Observable implements Observer {
 
-	private ServerSocket servidorLocal;
 	private Thread threadDeConexao;
 	
 	private Interlocutor interlocutor;
@@ -22,82 +17,16 @@ public class GerenciadorDeRede extends Observable {
 	}
 	
 	public void iniciaConexaoComoServidor(int porta) throws IOException {
-		servidorLocal = new ServerSocket(porta);
-		servidorLocal.setReuseAddress(true);
-		
-		ReceptorDeConexoes receptor = new ReceptorDeConexoes();
+		ReceptorDeConexoes receptor = new ReceptorDeConexoes(this, porta);
 		threadDeConexao = new Thread(receptor);
 		threadDeConexao.start();
 	}
 	
-	private class ReceptorDeConexoes implements Runnable {
-		@Override
-		public void run() {
-			try {
-				System.out.println("Vai começar a escutar conexoes");
-				Socket con = servidorLocal.accept();
-				interlocutor = new Interlocutor(con);
-				System.out.println("Recebeu conexao!");
-				setChanged();
-				notifyObservers(true);
-			} catch (IOException e) {
-				System.out.println("Conexao cancelada antes da conexão de um cliente.");
-			}
-		}
-	}
-	
-	public void iniciaConexaoComoCliente(String ipRemoto, int porta) throws IOException {
+	public void iniciaConexaoComoCliente(String ipRemoto, int porta) {
 		System.out.println("vai criar o socket com o ip " + ipRemoto + " e a porta " + porta);
-		Socket con = new Socket(ipRemoto, porta);
-		System.out.println("socket do cliente foi conectado? " + con.isConnected());
-		System.out.println("criou o socket");
-		interlocutor = new Interlocutor(con);
-		System.out.println("Criou o interlocutor");
-		setChanged();
-		System.out.println("fez set changed do observable no cliente");
-		notifyObservers(false);
-	}
-	
-	
-	public void fechaServidorLocal() throws IOException {
-		servidorLocal.close();
-		if(threadDeConexao != null && threadDeConexao.isAlive()) {
-			try {
-				threadDeConexao.join(500);
-			} catch (InterruptedException e) {
-				System.out.println("Erro ao matar a thread que recebe conexões");
-			}
-		}
-	}
-	
-	private class EmissorDeConexoes implements Runnable {
-		String ipRemoto;
-		public EmissorDeConexoes(String ip) {
-			ipRemoto = ip;
-		}
-		
-		@Override
-		public void run() {
-			try {
-				interlocutor = new Interlocutor(new Socket(ipRemoto, porta));
-				System.out.println("Criou o socket!");
-			} catch (IOException e) {
-				System.out.println("Nao conseguiu conectar ao servidor");
-			}
-			setChanged();
-			System.out.println("Deu changed e vai notificar o dialog");
-			notifyObservers(false);
-		}
-		
-	}
-	
-
-	public void fechaConexaoAoServidorRemoto() {
-		try {
-			interlocutor.getConexao().close();
-		} catch (IOException e) {
-			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
-		}
+		ConectadorDeCliente conectador = new ConectadorDeCliente(this, ipRemoto, porta);
+		threadDeConexao = new Thread(conectador);
+		threadDeConexao.run();
 	}
 	
 	public static InetAddress getIpLocal() {
@@ -112,5 +41,27 @@ public class GerenciadorDeRede extends Observable {
 
 	public Interlocutor getInterlocutor() {
 		return interlocutor;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		try {
+			threadDeConexao.join(500);
+		} catch (InterruptedException e) {
+			System.out.println("Erro ao matar a thread de conexão");
+		}
+		boolean ehServidor = (boolean)arg;
+		System.out.println("O arg que chegou no gerenciador de rede eh: " + ehServidor);
+		if(ehServidor) {
+			System.out.println("CHEGOU COMO SERVIDOR");
+			setChanged();
+			notifyObservers(true);
+			ReceptorDeConexoes receptor = (ReceptorDeConexoes)o;
+		} else {
+			System.out.println("CHEGOU COMO CLIENTE");
+			setChanged();
+			notifyObservers(false);
+			ConectadorDeCliente conectador = (ConectadorDeCliente)o;
+		}
 	}
 }

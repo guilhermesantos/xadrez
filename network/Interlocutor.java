@@ -2,7 +2,7 @@ package network;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.PrintStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Observable;
 
@@ -10,32 +10,23 @@ public class Interlocutor extends Observable {
 	private Socket conexao;
 	private String nome;
 	private ObjectInputStream entrada;
-	private PrintStream saida;
+	private ObjectOutputStream saida;
 	private Mensagem mensagemLida;
 	
-	public Interlocutor(Socket conexao) {
+	public Interlocutor(Socket conexao, ObjectInputStream entrada, ObjectOutputStream saida) {
 		super();
 		this.conexao = conexao;
-		try {
-			entrada = new ObjectInputStream(conexao.getInputStream());
-		} catch (IOException e) {
-			System.out.println("Erro ao criar canal de entrada");
-		}
-		try {
-			saida = new PrintStream(conexao.getOutputStream());
-		} catch (IOException e) {
-			System.out.println("Erro ao criar canal de saida");
-		}
-		EscutadorDeMensagens escutador = new EscutadorDeMensagens();
-		new Thread(escutador).run();
+		//EscutadorDeMensagens escutador = new EscutadorDeMensagens();
+		//new Thread(escutador).run();
 	}
 	
 	public Socket getConexao() {
 		return conexao;
 	}
 
-	public void escreveMensagem(Mensagem mensagem) {
-		saida.print(mensagem);
+	public void escreveMensagem(Mensagem mensagem) throws IOException {
+		saida.writeObject(mensagem);
+		saida.flush();
 	}
 	
 	public Mensagem getMensagem() {

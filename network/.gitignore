@@ -7,3 +7,8 @@
 /Interlocutor$EscutadorDeMensagens.class
 /Mensagem.class
 /GerenciadorDeRede$EmissorDeConexoes.class
+/GerenciadorDeRede$ConectorParaCliente.class
+/GerenciadorDeRede$ConectadorDeCliente.class
+/ReceptorDeConexoesData.class
+/ReceptorDeConexoes.class
+/ConectadorDeCliente.class

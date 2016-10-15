@@ -38,4 +38,8 @@ public class PainelComMensagens extends JPanel {
 	public void colocaActionListenerNoBotao(ActionListener listener) {
 		botaoCancelar.addActionListener(listener);
 	}
+	
+	public void mudaTextoDoBotao(String texto) {
+		botaoCancelar.setText("Fechar");
+	}
 }
