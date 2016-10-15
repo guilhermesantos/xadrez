@@ -10,6 +10,11 @@ public class Mensagem implements Serializable {
 	private Xadrez jogo;
 	private String texto;
 	
+	public Mensagem() {
+		jogo = null;
+		texto = null;
+	}
+	
 	public String getTexto() {
 		return texto;
 	}

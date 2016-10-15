@@ -48,13 +48,14 @@ public class XadrezGrafico extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		
-		XadrezDialog dialogDeFimDeJogo = new XadrezDialog
+		DialogComMensagemEBotao dialogDeFimDeJogo = new DialogComMensagemEBotao
 				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
+		XadrezGrafico gambiarra = this;
 		
 		ActionListener listenerQueFazOBotaoReiniciarOJogo = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Xadrez novoJogo = new Xadrez();
+				Xadrez novoJogo = new Xadrez(gambiarra);
 				substituiJogoEAtualizaGraficos(novoJogo);
 				dialogDeFimDeJogo.dispose();
 			}

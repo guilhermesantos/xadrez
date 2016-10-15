@@ -1,8 +1,6 @@
 package network;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,34 +8,22 @@ import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
-import exceptions.ConexaoAindaNaoEstabelecidaException;
-
 public class GerenciadorDeRede extends Observable {
 	private int porta;
 	private String nome;
 
 	private ServerSocket servidorLocal;
-	private PrintStream escritorDaRede;
-	private ObjectInputStream leitorDaRede;
-	
 	private Thread threadDeConexao;
 	
 	private Interlocutor interlocutor;
 	
-	//Esta classe usa serversocket para leitura, socket para escrita
-	public GerenciadorDeRede(int porta, String nome) {
-		this.nome = nome;
-		this.porta = porta;
+	public GerenciadorDeRede(Observer observer) {
+		addObserver(observer);
 	}
 	
-	public void estabeleceServidorLocal(Observer observer) {
-		try {
-			servidorLocal = new ServerSocket(porta);
-			servidorLocal.setReuseAddress(true);
-			addObserver(observer);
-		} catch (IOException e) {
-			System.out.println("Erro ao estabelecer o servidor no programa " + nome);
-		}	
+	public void iniciaConexaoComoServidor(int porta) throws IOException {
+		servidorLocal = new ServerSocket(porta);
+		servidorLocal.setReuseAddress(true);
 		
 		ReceptorDeConexoes receptor = new ReceptorDeConexoes();
 		threadDeConexao = new Thread(receptor);
@@ -48,23 +34,33 @@ public class GerenciadorDeRede extends Observable {
 		@Override
 		public void run() {
 			try {
-				interlocutor = new Interlocutor(servidorLocal.accept());
+				System.out.println("Vai começar a escutar conexoes");
+				Socket con = servidorLocal.accept();
+				interlocutor = new Interlocutor(con);
+				System.out.println("Recebeu conexao!");
 				setChanged();
-				notifyObservers(interlocutor);
+				notifyObservers(true);
 			} catch (IOException e) {
 				System.out.println("Conexao cancelada antes da conexão de um cliente.");
 			}
 		}
 	}
 	
+	public void iniciaConexaoComoCliente(String ipRemoto, int porta) throws IOException {
+		System.out.println("vai criar o socket com o ip " + ipRemoto + " e a porta " + porta);
+		Socket con = new Socket(ipRemoto, porta);
+		System.out.println("socket do cliente foi conectado? " + con.isConnected());
+		System.out.println("criou o socket");
+		interlocutor = new Interlocutor(con);
+		System.out.println("Criou o interlocutor");
+		setChanged();
+		System.out.println("fez set changed do observable no cliente");
+		notifyObservers(false);
+	}
+	
+	
 	public void fechaServidorLocal() throws IOException {
 		servidorLocal.close();
-		if(leitorDaRede != null) {
-			leitorDaRede.close();
-		}
-		if(escritorDaRede != null) {
-			escritorDaRede.close();
-		}
 		if(threadDeConexao != null && threadDeConexao.isAlive()) {
 			try {
 				threadDeConexao.join(500);
@@ -74,24 +70,33 @@ public class GerenciadorDeRede extends Observable {
 		}
 	}
 	
-	public void conectaAoServidorRemoto(InetAddress ipRemoto) 
-			throws UnknownHostException, IOException {
-			interlocutor = new Interlocutor(new Socket(ipRemoto, porta));
+	private class EmissorDeConexoes implements Runnable {
+		String ipRemoto;
+		public EmissorDeConexoes(String ip) {
+			ipRemoto = ip;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				interlocutor = new Interlocutor(new Socket(ipRemoto, porta));
+				System.out.println("Criou o socket!");
+			} catch (IOException e) {
+				System.out.println("Nao conseguiu conectar ao servidor");
+			}
+			setChanged();
+			System.out.println("Deu changed e vai notificar o dialog");
+			notifyObservers(false);
+		}
+		
 	}
 	
+
 	public void fechaConexaoAoServidorRemoto() {
 		try {
 			interlocutor.getConexao().close();
 		} catch (IOException e) {
 			System.out.println("Erro ao fechar a conexao ao servidor remoto no " + nome);
-		}
-	}
-	
-	public void escreveMensagem(String mensagem) throws ConexaoAindaNaoEstabelecidaException {
-		if(escritorDaRede != null) {
-			escritorDaRede.println(nome + " diz: " + mensagem);
-		} else {
-			throw new ConexaoAindaNaoEstabelecidaException();
 		}
 	}
 	
@@ -103,5 +108,9 @@ public class GerenciadorDeRede extends Observable {
 			System.out.println("Falhou ao descobrir o próprio IP.");
 		}
 		return ipLocal;
+	}
+
+	public Interlocutor getInterlocutor() {
+		return interlocutor;
 	}
 }

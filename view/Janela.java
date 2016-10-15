@@ -21,8 +21,8 @@ public class Janela extends JFrame {
 
 	private static final long serialVersionUID = -419158925384719190L;
 	
-	//Atributos da interface gráfica
-	// ------------------------------------------------------//
+//Atributos da interface gráfica
+// ------------------------------------------------------//
 	private Xadrez jogo;
 	private XadrezGrafico xadrezGrafico;
 	private JPanel containerDosBotoes;
@@ -32,8 +32,8 @@ public class Janela extends JFrame {
 	private JButton botaoCarregar;
 	private Window janelaExterna;
 
-	//Atributos da rede
-	// ------------------------------------------------------//
+//Atributos da rede
+// ------------------------------------------------------//
 
 	public Janela(String titulo, int largura, int altura) {
 		super(titulo);
@@ -149,8 +149,8 @@ public class Janela extends JFrame {
 				networkDialog.setVisible(true);
 				Interlocutor interlocutor = networkDialog.getInterlocutor();
 				if(interlocutor != null) {
-					
 					Logger.getInstance().logar("Conectado ao jogador " + interlocutor.getNome());
+					
 				}
 			}
 		};

@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import network.GerenciadorDeRede;
 import network.Interlocutor;
@@ -31,8 +30,12 @@ public class NetworkDialog extends JDialog implements Observer {
 //Atributos da interface grafica
 // ------------------------------------------------------//
 	private JPanel painelDeEntradaDeDadosDaConexao;
-	private JPanel painelConectando;
-	private JPanel painelAguardandoConexao;
+	private PainelComMensagens painelConectando;
+	private PainelComMensagens painelConectandoFalhou;
+	private PainelComMensagens painelConectandoFuncionou;
+	private PainelComMensagens painelAguardandoConexao;
+	private PainelComMensagens painelAguardandoConexaoFalhou;
+	private PainelComMensagens painelAguardandoConexaoFuncionou;
 	
 	private JPanel containerDosCamposDaConexao;
 	private JPanel containerDosBotoesDaConexao;
@@ -42,7 +45,7 @@ public class NetworkDialog extends JDialog implements Observer {
 	private JRadioButton radioConectar;
 	
 	private JTextField campoPortaConexao;
-	private JTextField campoIPDestino;
+	private JTextField campoIPRemoto;
 	private JTextField campoNomeJogador;
 
 	private CardLayout layoutDoDialog;
@@ -57,16 +60,43 @@ public class NetworkDialog extends JDialog implements Observer {
 	
 	public NetworkDialog(Window window) {
 		super(window, "Multiplayer");
+
+		if(gerenciadorDeRede == null) {
+			gerenciadorDeRede = new GerenciadorDeRede(this);
+		}
+		
 		configuraDialog();
 		
+		criaPaineisDoCardLayout();
+	}
+
+	private void criaPaineisDoCardLayout() {
 		painelDeEntradaDeDadosDaConexao = constroiPainelDeEntradaDeDadosDaConexao();
 		super.add(painelDeEntradaDeDadosDaConexao, "painelDeEntradaDeDadosDaConexao");
 		
-		painelConectando = constroiPainelConectando();
+		painelConectando = new PainelComMensagens("Conectando...");
+		painelConectando.colocaActionListenerNoBotao(criaActionListenerQueCancelaConectando());
 		super.add(painelConectando, "painelConectando");
 		
-		painelAguardandoConexao = constroiPainelAguardandoConexao();
+		painelConectandoFalhou = new PainelComMensagens("Conexão falhou.", "Certeza", "que o servidor está pronto?");
+		painelConectandoFalhou.colocaActionListenerNoBotao(criaActionListenerQueCancelaConectando());
+		super.add(painelConectandoFalhou, "painelConectandoFalhou");
+		
+		painelConectandoFuncionou = new PainelComMensagens("Conectou ao servidor!");
+		painelConectandoFuncionou.colocaActionListenerNoBotao(criaActionListenerQueFechaODialog());
+		super.add(painelConectandoFuncionou, "painelConectandoFuncionou");
+		
+		painelAguardandoConexao = new PainelComMensagens("Aguardando conexao...");
+		painelAguardandoConexao.colocaActionListenerNoBotao(criaActionListenerQueCancelaAguardandoConexao());
 		super.add(painelAguardandoConexao, "painelAguardandoConexao");
+		
+		painelAguardandoConexaoFalhou = new PainelComMensagens("Servidor falhou.","Certeza ", "que a porta está livre?");
+		painelAguardandoConexaoFalhou.colocaActionListenerNoBotao(criaActionListenerQueCancelaAguardandoConexao());
+		super.add(painelAguardandoConexaoFalhou, "painelAguardandoConexaoFalhou");
+		
+		painelAguardandoConexaoFuncionou = new PainelComMensagens("Cliente detectado!");
+		painelAguardandoConexaoFuncionou.colocaActionListenerNoBotao(criaActionListenerQueFechaODialog());
+		super.add(painelAguardandoConexaoFuncionou, "painelAguardandoConexaoFuncionou");
 	}
 	
 	private void configuraDialog() {
@@ -77,31 +107,6 @@ public class NetworkDialog extends JDialog implements Observer {
 		layoutDoDialog = new CardLayout();
 		super.setLayout(layoutDoDialog);
 		this.interlocutor = null;
-	}
-	
-	private JPanel constroiPainelAguardandoConexao() {
-		JPanel painelAguardandoConexao = new JPanel(new BorderLayout());
-
-		JLabel labelAguardandoConexao = new JLabel("            Aguardando conexao...");
-		painelAguardandoConexao.add(labelAguardandoConexao, BorderLayout.CENTER);
-		
-		JButton botaoCancelar = new JButton("Cancelar");
-		botaoCancelar.addActionListener(criaActionListenerQueCancelaAguardandoConexao());
-		painelAguardandoConexao.add(botaoCancelar, BorderLayout.SOUTH);
-		return painelAguardandoConexao;
-	}
-	
-	private JPanel constroiPainelConectando() {
-		JPanel painelConectando = new JPanel(new BorderLayout());
-
-		JLabel labelConectando = new JLabel("                    Conectando...");
-		painelConectando.add(labelConectando, BorderLayout.CENTER);
-		
-		JButton botaoCancelar = new JButton("Cancelar");
-		botaoCancelar.addActionListener(criaActionListenerQueCancelaConexao());
-		painelConectando.add(botaoCancelar, BorderLayout.SOUTH);
-		
-		return painelConectando;
 	}
 	
 	private JPanel constroiPainelDeEntradaDeDadosDaConexao() {
@@ -124,16 +129,13 @@ public class NetworkDialog extends JDialog implements Observer {
 			JPanel containerCampos = new JPanel(new FlowLayout());
 	
 			JLabel labelNomeJogador = new JLabel("Nome do jogador: ");
-			campoNomeJogador = new JTextField(10);
-			
-			JLabel labelIPDestino = new JLabel("Ip de destino: ");
-			campoIPDestino = new JTextField(10);
-	
 			JLabel labelPortaConexao = new JLabel("Porta para fazer conexão: ");
-			campoPortaConexao = new JTextField(10);
+			JLabel labelIPRemoto = new JLabel("Ip de destino: ");
+			JLabel labelIPLocal = new JLabel("IP local: " + GerenciadorDeRede.getIpLocal().getHostAddress());
 			
-			JLabel labelIPLocal = null;
-			labelIPLocal = new JLabel("IP local: " + GerenciadorDeRede.getIpLocal().getHostAddress());
+			campoNomeJogador = new JTextField(10);
+			campoIPRemoto = new JTextField(10);
+			campoPortaConexao = new JTextField(10);
 
 			containerCampos.add(labelNomeJogador);
 			containerCampos.add(campoNomeJogador);
@@ -141,8 +143,8 @@ public class NetworkDialog extends JDialog implements Observer {
 			containerCampos.add(labelPortaConexao);
 			containerCampos.add(campoPortaConexao);
 
-			containerCampos.add(labelIPDestino);
-			containerCampos.add(campoIPDestino);
+			containerCampos.add(labelIPRemoto);
+			containerCampos.add(campoIPRemoto);
 	
 			containerCampos.add(labelIPLocal);
 			
@@ -195,38 +197,58 @@ public class NetworkDialog extends JDialog implements Observer {
 	}
 	
 	private ActionListener criaActionListenerQueRealizaConexao() {
-
+		
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				gerenciadorDeRede = new GerenciadorDeRede(Integer
-						.parseInt(campoPortaConexao.getText()), campoNomeJogador.getText());
-
 				if(radioHospedar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelAguardandoConexao");
-					iniciaAguardandoConexao();
+					iniciaConexaoComoServidor();
 					
 				} else if(radioConectar.isSelected()) {
 					layoutDoDialog.show(getContentPane(), "painelConectando");
+					iniciaConexaoComoCliente();
 				}
 			}
 		};
 		return listener;
 	}
 	
-	public void iniciaAguardandoConexao() {
-		gerenciadorDeRede.estabeleceServidorLocal(this);
+	public void iniciaConexaoComoServidor() {
+		try {
+			gerenciadorDeRede.iniciaConexaoComoServidor(Integer.parseInt(campoPortaConexao.getText()));
+		} catch (IOException e) {
+			System.out.println("Aguardando conexao falhou!");
+			layoutDoDialog.show(getContentPane(), "painelAguardandoConexaoFalhou");
+		}
+	}
+	
+	public void iniciaConexaoComoCliente() {
+		try {
+			System.out.println("Vai iniciar conexao como cliente");
+			gerenciadorDeRede.iniciaConexaoComoCliente(campoIPRemoto.getText(), 
+					Integer.parseInt(campoPortaConexao.getText()));
+		} catch(IOException e) {
+			System.out.println("Conectando falhou!");
+			layoutDoDialog.show(getContentPane(), "painelConectandoFalhou");
+		}
 	}
 	
 	@Override
-	//Invocado quando o cliente conecta ao servidor local
+	//Invocado quando o cliente remoto conecta ao servidor local, ou o cliente local conecta ao 
+	//servidor remoto
 	public void update(Observable o, Object arg) {
-		this.interlocutor = (Interlocutor)arg;
-		XadrezDialog xadrezDialog = new XadrezDialog(SwingUtilities.getWindowAncestor(this),
-				"Conectado ao jogador " + interlocutor.getNome());
-		xadrezDialog.setVisible(true);
-		this.dispose();
+		System.out.println("Network dialog foi notificado que a " 
+	+ "conexão foi estabelecida. o arg eh: " + (boolean)arg);
+		boolean conectouComoServidor = (boolean)arg;
+		if(conectouComoServidor) {
+			System.out.println("Conectou como servidor");
+			layoutDoDialog.show(getContentPane(), "painelAguardandoConexaoFuncionou");
+		} else {
+			System.out.println("Conectou como cliente");
+			layoutDoDialog.show(getContentPane(), "painelConectandoFuncionou");
+		}
 	}
 	
 	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {
@@ -245,7 +267,7 @@ public class NetworkDialog extends JDialog implements Observer {
 		return listener;
 	}
 	
-	private ActionListener criaActionListenerQueCancelaConexao() {
+	private ActionListener criaActionListenerQueCancelaConectando() {
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -260,11 +282,11 @@ public class NetworkDialog extends JDialog implements Observer {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(radioHospedar.isSelected()) {
-					campoIPDestino.setEnabled(false);
-					campoIPDestino.setBackground(Color.LIGHT_GRAY);
+					campoIPRemoto.setEnabled(false);
+					campoIPRemoto.setBackground(Color.LIGHT_GRAY);
 				} else if(radioConectar.isSelected()) {
-					campoIPDestino.setEnabled(true);
-					campoIPDestino.setBackground(Color.WHITE);
+					campoIPRemoto.setEnabled(true);
+					campoIPRemoto.setBackground(Color.WHITE);
 				}
 			}
 		};

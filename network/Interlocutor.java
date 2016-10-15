@@ -11,12 +11,12 @@ public class Interlocutor extends Observable {
 	private String nome;
 	private ObjectInputStream entrada;
 	private PrintStream saida;
-	private Object mensagemLida;
+	private Mensagem mensagemLida;
 	
 	public Interlocutor(Socket conexao) {
 		super();
 		this.conexao = conexao;
-		try {
+		/*try {
 			entrada = new ObjectInputStream(conexao.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Erro ao criar canal de entrada");
@@ -27,27 +27,19 @@ public class Interlocutor extends Observable {
 			System.out.println("Erro ao criar canal de saida");
 		}
 		EscutadorDeMensagens escutador = new EscutadorDeMensagens();
-		new Thread(escutador).run();
+		new Thread(escutador).run();*/
 	}
 	
 	public Socket getConexao() {
 		return conexao;
 	}
 
-	public void setConexao(Socket conexao) {
-		this.conexao = conexao;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public void escreveMensagem(Object mensagem) {
+	public void escreveMensagem(Mensagem mensagem) {
 		saida.print(mensagem);
+	}
+	
+	public Mensagem getMensagem() {
+		return mensagemLida;
 	}
 	
 	private class EscutadorDeMensagens implements Runnable {
@@ -55,14 +47,14 @@ public class Interlocutor extends Observable {
 		private long marcacaoAnterior;
 		@Override
 		public void run() {
-			long marcacaoAtual;
+			long marcacaoAtual = System.currentTimeMillis();
 			while(true) {
 				marcacaoAtual = System.nanoTime();
 				delta = marcacaoAtual - marcacaoAnterior;
 				if(delta < 1e9) {
 					try {
 						System.out.println("Tentando ler mensagem");
-						mensagemLida = entrada.readObject();
+						mensagemLida = (Mensagem)entrada.readObject();
 						setChanged();
 						notifyObservers(mensagemLida);
 					} catch (ClassNotFoundException e) {
@@ -73,5 +65,13 @@ public class Interlocutor extends Observable {
 				marcacaoAnterior = marcacaoAtual;
 			}
 		}
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 }

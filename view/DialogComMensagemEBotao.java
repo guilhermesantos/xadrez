@@ -11,18 +11,49 @@ import javax.swing.JLabel;
 
 import properties.Constantes;
 
-public class XadrezDialog extends JDialog {
+public class DialogComMensagemEBotao extends JDialog {
 	private static final long serialVersionUID = -6412765964258819121L;
 	private JButton botao;
 	private JLabel labelMensagem;
 	
-	public XadrezDialog(Window window, String tituloDaJanela) {
+	public DialogComMensagemEBotao(Window window, String tituloDaJanela) {
 		super(window, tituloDaJanela);
-
-		super.setLayout(new BorderLayout());
-		super.setSize(200, 100);
-		super.setLocation(Constantes.LARGURA_JANELA/2, Constantes.ALTURA_JANELA/2);
-		
+		configuraDialog();
+		criaComponentes();
+	}
+	
+	public DialogComMensagemEBotao(Window window, String tituloDaJanela, String mensagem, int largura, int altura) { 
+		super(window, tituloDaJanela);
+		configuraDialog(largura, altura);
+		criaComponentes();
+		labelMensagem.setText(mensagem);
+		super.add(labelMensagem, BorderLayout.NORTH);
+	}
+	
+	public DialogComMensagemEBotao(Window window, String tituloDaJanela, String mensagem) {
+		super(window, tituloDaJanela);
+		configuraDialog();
+		criaComponentes();
+		labelMensagem.setText(mensagem);
+		super.add(labelMensagem, BorderLayout.NORTH);
+	}
+	
+	public DialogComMensagemEBotao(Window window, String tituloDaJanela, String mensagem, String mensagemNoBotao) {
+		super(window, tituloDaJanela);
+		configuraDialog();
+		criaComponentes();
+		labelMensagem.setText(mensagem);
+		botao.setText(mensagemNoBotao);
+	}
+	
+	public DialogComMensagemEBotao(Window window, String tituloDaJanela, ActionListener acaoDoBotao) {
+		super(window, tituloDaJanela);
+		configuraDialog();
+		criaComponentes();
+		botao.addActionListener(acaoDoBotao);
+	}
+	
+	private void criaComponentes() {
 		botao = new JButton("Ok");
 		botao.addActionListener(criaActionListenerQueFechaODialog());
 
@@ -30,20 +61,16 @@ public class XadrezDialog extends JDialog {
 		super.add(botao, BorderLayout.SOUTH);
 	}
 	
-	public XadrezDialog(Window window, String tituloDaJanela, String mensagem) {
-		this(window, tituloDaJanela);
-		labelMensagem.setText(mensagem);
-		super.add(labelMensagem, BorderLayout.NORTH);
+	private void configuraDialog(int largura, int altura) {
+		System.out.println("Esta colocando o tamanho no dialog!");
+		super.setSize(largura, altura);
+		super.setLayout(new BorderLayout());
+		super.setSize(200, 100);
+		super.setLocation(Constantes.LARGURA_JANELA/2, Constantes.ALTURA_JANELA/2);
 	}
 	
-	public XadrezDialog(Window window, String tituloDaJanela, String mensagem, String mensagemNoBotao) {
-		this(window, tituloDaJanela, mensagem);
-		botao.setText(mensagemNoBotao);
-	}
-	
-	public XadrezDialog(Window window, String tituloDaJanela, ActionListener acaoDoBotao) {
-		this(window, tituloDaJanela);
-		botao.addActionListener(acaoDoBotao);
+	private void configuraDialog() {
+		configuraDialog(200, 200);
 	}
 	
 	private ActionListener criaActionListenerQueFechaODialog() {
