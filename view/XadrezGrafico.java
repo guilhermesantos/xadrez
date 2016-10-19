@@ -13,20 +13,31 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import exceptions.ClicouNoMeioDoNadaException;
+import exceptions.JogoJaAcabouException;
+import exceptions.NaoEstaNaVezDoJogadorException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
+import game.Cor;
 import game.EstadoJogo;
 import game.Xadrez;
+import network.Interlocutor;
+import network.MensagemComJogo;
 
 public class XadrezGrafico extends JPanel implements Observer {
 	
 	private static final long serialVersionUID = -4661370508920536135L;
 
 	private Xadrez jogo;
-
 	private TabuleiroGrafico tabuleiroGrafico;
+	private Interlocutor interlocutor;
 	private XadrezMouseListener listener;
+	private Cor corJogador;
 
+	public XadrezGrafico(Xadrez jogo, Interlocutor interlocutor) {
+		this(jogo);
+		this.interlocutor = interlocutor;
+	}
+	
 	public XadrezGrafico(Xadrez jogo) {
 		super.setLayout(new BorderLayout());
 		listener = new XadrezMouseListener();
@@ -38,18 +49,31 @@ public class XadrezGrafico extends JPanel implements Observer {
 		substituiJogoEAtualizaGraficos(jogo);
 		Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 		
+		interlocutor = null;
+		
+		corJogador = Cor.BRANCO;
 		super.add(tabuleiroGrafico);
+	}
+	
+	public boolean estaEmRede() {
+		return interlocutor != null;
 	}
 	
 	public void substituiJogoEAtualizaGraficos(Xadrez jogo) {
 		this.jogo = jogo;
-		jogo.addObserver(this);
+		this.corJogador = jogo.getCorDoUltimoJogadorAAgir().alternaCor();
 		tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
 	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		
+		System.out.println("Recebendo o estado do jogo");
+		MensagemComJogo mensagem = (MensagemComJogo)arg;
+		substituiJogoEAtualizaGraficos(mensagem.getConteudoMensagem());
+		System.out.println("Recebeu o estado do jogo e restaurou o estado do jogo deste lado");
+	}
+	
+	private void exibeODialogDeFimDeJogo() {
 		DialogComMensagemEBotao dialogDeFimDeJogo = new DialogComMensagemEBotao
 				(SwingUtilities.getWindowAncestor(this), "Fim de jogo");
 		
@@ -58,23 +82,30 @@ public class XadrezGrafico extends JPanel implements Observer {
 			public void actionPerformed(ActionEvent e) {
 				Xadrez novoJogo = new Xadrez();
 				substituiJogoEAtualizaGraficos(novoJogo);
+				corJogador = Cor.BRANCO;
+				if(estaEmRede()) {
+					interlocutor.escreveMensagem(new MensagemComJogo(jogo));
+				}
 				dialogDeFimDeJogo.dispose();
 			}
 		};
 		
 		dialogDeFimDeJogo.substituiActionListenerDoBotao(listenerQueFazOBotaoReiniciarOJogo);
-
-		if(arg.equals(EstadoJogo.TURNO_BRANCO)) {
+		
+		if(jogo.getEstadoJogo().equals(EstadoJogo.VITORIA_BRANCO)) {
 			dialogDeFimDeJogo.setTextoMensagem("Pecas brancas venceram!");
-		} else if(arg.equals(EstadoJogo.TURNO_PRETO)){
+		} else if(jogo.getEstadoJogo().equals(EstadoJogo.VITORIA_PRETO)){
 			dialogDeFimDeJogo.setTextoMensagem("Pecas pretas venceram!");
 		}
 		
 		dialogDeFimDeJogo.setVisible(true);
 	}
 	
+	public void setCorJogador(Cor corJogador) {
+		this.corJogador = corJogador;
+	}
+
 	private class XadrezMouseListener implements MouseListener {
-		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Point coordenadasCasaClicada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
@@ -83,27 +114,36 @@ public class XadrezGrafico extends JPanel implements Observer {
 					.contains(coordenadasCasaClicada);
 			
 			if(casaClicadaEhUmMovimentoValido) {
-				jogo.movePeca(jogo.getCoordenadasPecaSelecionada(), coordenadasCasaClicada);
+				jogo.movePeca(corJogador, jogo.getCoordenadasPecaSelecionada(), coordenadasCasaClicada);
 				tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
+				
+				if(jogo.jogoJaAcabou()) {
+					exibeODialogDeFimDeJogo();
+				}
 				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
-			
+				
+				if(estaEmRede()) {
+					System.out.println("Jogo está em rede");
+					interlocutor.escreveMensagem(new MensagemComJogo(jogo));
+				} else {
+					corJogador = corJogador.alternaCor();
+				}
 			} else {
-				//Clicou em outra peca ou clicou no meio do nada
 				try {
-					
-					jogo.selecionaPeca(coordenadasCasaClicada);
+					jogo.selecionaPeca(corJogador, coordenadasCasaClicada);
 					tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
-
-				} catch (ClicouNoMeioDoNadaException e1) {
 					
-					//Logger.getInstance().logar("O jogador clicou no meio do nada.");
+				} catch (ClicouNoMeioDoNadaException e1) {
 					jogo.getMovimentosValidos().clear();
 					tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
-					
 				} catch (PecaNaoPertenceAoJogadorException e2) {
 					Logger.getInstance().logar("A peca selecionada nao pertence ao jogador.");
 				} catch (NaoHaMovimentosValidosException e3) {
 					Logger.getInstance().logar("Nao há movimentos válidos para a peça selecionada.");
+				} catch (JogoJaAcabouException e1) {
+					Logger.getInstance().logar("O jogo já terminou. Não há mais movimentos válidos.");
+				} catch (NaoEstaNaVezDoJogadorException e1) {
+					Logger.getInstance().logar("Não é a sua vez. Por favor, aguarde o movimento do outro jogador.");
 				} 
 			}
 		}
@@ -123,5 +163,14 @@ public class XadrezGrafico extends JPanel implements Observer {
 		@Override
 		public void mouseExited(MouseEvent e) {
 		}
+	}
+
+	public Interlocutor getInterlocutor() {
+		return interlocutor;
+	}
+
+	public void setInterlocutor(Interlocutor interlocutor) {
+		interlocutor.addObserver(this);
+		this.interlocutor = interlocutor;
 	}
 }

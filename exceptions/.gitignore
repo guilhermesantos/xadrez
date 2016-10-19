@@ -4,3 +4,5 @@
 /ClicouNoMeioDoNadaException.class
 /ConexaoAindaNaoEstabelecidaException.class
 /BotaoNaoTemListenerException.class
+/JogoJaAcabouException.class
+/NaoEstaNaVezDoJogadorException.class

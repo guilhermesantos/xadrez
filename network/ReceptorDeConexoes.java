@@ -38,6 +38,7 @@ public class ReceptorDeConexoes extends Observable implements Runnable {
 		} catch (IOException e) {
 			System.out.println("Nao recebeu nenhuma conexao");
 		}
+		System.out.println("Recebeu a conexao!");
 		
 		ObjectOutputStream saida = null;
 		try {
@@ -46,6 +47,7 @@ public class ReceptorDeConexoes extends Observable implements Runnable {
 		} catch (IOException e) {
 			System.out.println("Erro ao criar o canal de saida do servidor local");
 		}
+		System.out.println("Criou a saida do servidor");
 		
 		ObjectInputStream entrada = null;
 		try {
@@ -53,9 +55,12 @@ public class ReceptorDeConexoes extends Observable implements Runnable {
 		} catch (IOException e) {
 			System.out.println("Erro ao criar o canal de entrada do servidor local");
 		}
-		interlocutor = new Interlocutor(con, entrada, saida);
-		System.out.println("Recebeu conexao!");
+		System.out.println("Criou a entrada do servidor");
+		
+		interlocutor = new Interlocutor(con, entrada, saida, TipoInterlocutor.CLIENTE);
+		System.out.println("Vai dar set changed no servidor por ter detectado um cliente (sou o servidor)");
 		setChanged();
-		notifyObservers(true);
+		System.out.println("Deu set changed no servidor e vai notificar o gerenciador de rede");
+		notifyObservers(interlocutor);
 	}
 }

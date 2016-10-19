@@ -14,8 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import game.Cor;
 import game.Xadrez;
 import network.Interlocutor;
+import network.TipoInterlocutor;
 
 public class Janela extends JFrame {
 
@@ -33,6 +35,7 @@ public class Janela extends JFrame {
 	private Window janelaExterna;
 
 //Atributos da rede
+	private Interlocutor interlocutor;
 // ------------------------------------------------------//
 
 	public Janela(String titulo, int largura, int altura) {
@@ -45,7 +48,6 @@ public class Janela extends JFrame {
 		jogo = new Xadrez();
 		xadrezGrafico = new XadrezGrafico(jogo);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
-		
 		super.add(Logger.getInstance(), BorderLayout.SOUTH);
 	}
 	
@@ -145,10 +147,21 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				networkDialog.setVisible(true);
-				Interlocutor interlocutor = networkDialog.getInterlocutor();
+				interlocutor = networkDialog.getInterlocutor();
 				if(interlocutor != null) {
-					Logger.getInstance().logar("Conectado ao jogador " + interlocutor.getNome());
+					jogo = new Xadrez();
+					xadrezGrafico.setInterlocutor(interlocutor);
+					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 					
+					if(interlocutor.getTipoInterlocutor().equals(TipoInterlocutor.CLIENTE)) {
+						System.out.println("Colocando o jogador local como branco");
+						xadrezGrafico.setCorJogador(Cor.BRANCO);
+					} else {
+						System.out.println("Colocando o jogador local como preto");
+						xadrezGrafico.setCorJogador(Cor.PRETO);
+					}
+					
+					Logger.getInstance().logar("Conectado ao jogador " + interlocutor.getNome());
 				}
 			}
 		};

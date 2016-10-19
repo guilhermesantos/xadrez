@@ -12,3 +12,9 @@
 /ReceptorDeConexoesData.class
 /ReceptorDeConexoes.class
 /ConectadorDeCliente.class
+/TipoMensagem.class
+/MensagemComJogo.class
+/MensagemComNome.class
+/TipoInterlocutor.class
+/MensagemComTexto.class
+/EscutadorDeMensagens.class

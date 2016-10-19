@@ -10,8 +10,6 @@ public class GerenciadorDeRede extends Observable implements Observer {
 
 	private Thread threadDeConexao;
 	
-	private Interlocutor interlocutor;
-	
 	public GerenciadorDeRede(Observer observer) {
 		addObserver(observer);
 	}
@@ -26,7 +24,8 @@ public class GerenciadorDeRede extends Observable implements Observer {
 		System.out.println("vai criar o socket com o ip " + ipRemoto + " e a porta " + porta);
 		ConectadorDeCliente conectador = new ConectadorDeCliente(this, ipRemoto, porta);
 		threadDeConexao = new Thread(conectador);
-		threadDeConexao.run();
+		//TODO: Avisar ao professor que aqui tinha um thread.run ao inves de um thread.start
+		threadDeConexao.start();
 	}
 	
 	public static InetAddress getIpLocal() {
@@ -39,29 +38,19 @@ public class GerenciadorDeRede extends Observable implements Observer {
 		return ipLocal;
 	}
 
-	public Interlocutor getInterlocutor() {
-		return interlocutor;
-	}
-
 	@Override
 	public void update(Observable o, Object arg) {
-		try {
-			threadDeConexao.join(500);
-		} catch (InterruptedException e) {
-			System.out.println("Erro ao matar a thread de conexão");
-		}
-		boolean ehServidor = (boolean)arg;
-		System.out.println("O arg que chegou no gerenciador de rede eh: " + ehServidor);
-		if(ehServidor) {
-			System.out.println("CHEGOU COMO SERVIDOR");
-			setChanged();
-			notifyObservers(true);
-			ReceptorDeConexoes receptor = (ReceptorDeConexoes)o;
+		Interlocutor interlocutor = (Interlocutor)arg;
+		threadDeConexao.interrupt();
+		if(interlocutor.getTipoInterlocutor() == TipoInterlocutor.SERVIDOR) {
+			System.out.println("Matou a thread de conectar ao servidor");
 		} else {
-			System.out.println("CHEGOU COMO CLIENTE");
-			setChanged();
-			notifyObservers(false);
-			ConectadorDeCliente conectador = (ConectadorDeCliente)o;
+			System.out.println("Matou a thread de aguardar conexao");
 		}
+		
+		System.out.println("Notificou o gerenciador de rede. agora vai dar set changed no gerenciador de rede");
+		setChanged();
+		System.out.println("Deu set changed no gerenciador. agora vai notificar o dialog");
+		notifyObservers(interlocutor);
 	}
 }

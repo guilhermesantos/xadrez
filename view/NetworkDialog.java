@@ -23,6 +23,8 @@ import javax.swing.JTextField;
 
 import network.GerenciadorDeRede;
 import network.Interlocutor;
+import network.MensagemComTexto;
+import network.TipoInterlocutor;
 
 public class NetworkDialog extends JDialog implements Observer {
 	private static final long serialVersionUID = 2274645232014160309L;
@@ -69,6 +71,16 @@ public class NetworkDialog extends JDialog implements Observer {
 		
 		criaPaineisDoCardLayout();
 	}
+	
+	public NetworkDialog(Window window, int x, int y) {
+		super(window, "Multiplayer");
+		
+		if(gerenciadorDeRede == null) {
+			gerenciadorDeRede = new GerenciadorDeRede(this);
+		}
+		configuraDialog(x, y);
+		criaPaineisDoCardLayout();
+	}
 
 	private void criaPaineisDoCardLayout() {
 		painelDeEntradaDeDadosDaConexao = constroiPainelDeEntradaDeDadosDaConexao();
@@ -102,8 +114,12 @@ public class NetworkDialog extends JDialog implements Observer {
 	}
 	
 	private void configuraDialog() {
+		configuraDialog(50, 50);
+	}
+	
+	private void configuraDialog(int x, int y) {
 		super.setSize(LARGURA_DIALOG, ALTURA_DIALOG);
-		super.setLocation(50, 50);
+		super.setLocation(x, y);
 		super.setResizable(false);
 		super.setModal(true);
 		layoutDoDialog = new CardLayout();
@@ -238,16 +254,14 @@ public class NetworkDialog extends JDialog implements Observer {
 	//Invocado quando o cliente remoto conecta ao servidor local, ou o cliente local conecta ao 
 	//servidor remoto
 	public void update(Observable o, Object arg) {
-		System.out.println("Network dialog foi notificado que a " 
-	+ "conexão foi estabelecida. o arg eh: " + (boolean)arg);
-		boolean conectouComoServidor = (boolean)arg;
-		if(conectouComoServidor) {
-			System.out.println("Conectou como servidor");
-			layoutDoDialog.show(getContentPane(), "painelAguardandoConexaoFuncionou");
-		} else {
-			System.out.println("Conectou como cliente");
+		interlocutor = (Interlocutor)arg;
+		interlocutor.comecaAEscutarMensagens();
+		if(interlocutor.getTipoInterlocutor().equals(TipoInterlocutor.SERVIDOR)) {
 			layoutDoDialog.show(getContentPane(), "painelConectandoFuncionou");
+		} else {
+			layoutDoDialog.show(getContentPane(), "painelAguardandoConexaoFuncionou");
 		}
+		interlocutor.escreveMensagem(new MensagemComTexto(campoNomeJogador.getText()));
 	}
 	
 	private ActionListener criaActionListenerQueCancelaAguardandoConexao() {

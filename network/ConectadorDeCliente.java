@@ -16,33 +16,40 @@ public class ConectadorDeCliente extends Observable implements Runnable {
 		ipRemoto = ip;
 		portaRemota = porta;
 	}
+	
 	@Override
 	public void run() {
 		Socket con = null;
 		Interlocutor interlocutor = null;
 		ObjectInputStream entrada = null;
 		ObjectOutputStream saida = null;
+		
 		try {
 			con = new Socket(ipRemoto, portaRemota);
 			System.out.println("Criou o socket do cliente!");
 		} catch (IOException e) {
 			System.out.println("Nao conseguiu conectar ao servidor");
 		}
+		
+		try {
+			entrada = new ObjectInputStream(con.getInputStream());
+		} catch (IOException e) {
+			System.out.println("Nao conseguiu criar o input stream pro cliente");
+		}
+		System.out.println("Criou input stream do cliente");
+		
 		try {
 			saida = new ObjectOutputStream(con.getOutputStream());
 			saida.flush();
 		} catch (IOException e) {
 			System.out.println("Nao conseguiu criar o input stream pro servidor");
 		}
-		try {
-			entrada = new ObjectInputStream(con.getInputStream());
-		} catch (IOException e) {
-			System.out.println("Nao conseguiu criar o input stream pro cliente");
-		}
-		interlocutor = new Interlocutor(con, entrada, saida);
-		System.out.println("Conseguiu conectar como cliente");
+		System.out.println("Criou output stream do cliente");
+		
+		interlocutor = new Interlocutor(con, entrada, saida, TipoInterlocutor.SERVIDOR);
+		System.out.println("vai dar set changed por ter conseguido conectar no servidor (sou o cliente)");
 		setChanged();
-		System.out.println("Deu changed como cliente e vai notificar o dialog");
-		notifyObservers(false);
+		System.out.println("Deu changed como cliente e vai notificar o gerenciador de rede");
+		notifyObservers(interlocutor);
 	}
 }
