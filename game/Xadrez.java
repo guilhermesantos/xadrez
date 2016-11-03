@@ -16,8 +16,9 @@ import exceptions.JogoJaAcabouException;
 import exceptions.NaoEstaNaVezDoJogadorException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
+import timer.TimerLogico;
 
-public class Xadrez implements Serializable {
+public class Xadrez implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4332058372731129426L;
 
 	private EstadoJogo estadoJogo;
@@ -25,6 +26,8 @@ public class Xadrez implements Serializable {
 	private List<Point> movimentosValidos;
 	private Tabuleiro tabuleiro;
 	private Cor corDoUltimoJogadorAAgir;
+	private TimerLogico timerTurno;
+	private TimerLogico timerPartida;
 	
 	public Tabuleiro getTabuleiro() {
 		return tabuleiro;
@@ -48,6 +51,12 @@ public class Xadrez implements Serializable {
 		coordenadasPecaSelecionada = null;
 		movimentosValidos = new ArrayList<Point>();
 		corDoUltimoJogadorAAgir = Cor.PRETO;
+		
+		timerPartida = new TimerLogico();
+		timerPartida.iniciaTimer();
+		
+		timerTurno = new TimerLogico();
+		timerTurno.iniciaTimer();
 	}
 	
 	public List<Point> selecionaPeca(Cor corJogador, Point coordenadas) throws PecaNaoPertenceAoJogadorException, 
@@ -156,15 +165,29 @@ public class Xadrez implements Serializable {
 	}
 	
 	public Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {
+		this.getTimerPartida().encerraTimer();
+		this.getTimerTurno().encerraTimer();
+		
 		Xadrez jogoCarregado;
 		FileInputStream fileInput = new FileInputStream("jogo_salvo.dat");
 		ObjectInputStream objectInput = new ObjectInputStream(fileInput);
 		jogoCarregado = (Xadrez)objectInput.readObject();
 		objectInput.close();
+		
+		jogoCarregado.getTimerPartida().iniciaTimer();
+		jogoCarregado.getTimerTurno().iniciaTimer();
 		return jogoCarregado;
 	}
 
 	public Cor getCorDoUltimoJogadorAAgir() {
 		return corDoUltimoJogadorAAgir;
+	}
+
+	public TimerLogico getTimerTurno() {
+		return timerTurno;
+	}
+
+	public TimerLogico getTimerPartida() {
+		return timerPartida;
 	}
 }

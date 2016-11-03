@@ -18,6 +18,7 @@ import game.Cor;
 import game.Xadrez;
 import network.Interlocutor;
 import network.TipoInterlocutor;
+import timer.TimerVisual;
 
 public class Janela extends JFrame {
 
@@ -26,13 +27,14 @@ public class Janela extends JFrame {
 //Atributos da interface gráfica
 // ------------------------------------------------------//
 	private Xadrez jogo;
-	private XadrezGrafico xadrezGrafico;
+	private GerenciadorInterfaceGraficaXadrez xadrezGrafico;
 	private JPanel containerDosBotoes;
 	private JButton botaoReiniciar;
 	private JButton botaoSalvar;
 	private JButton botaoMultiplayer;
 	private JButton botaoCarregar;
 	private Window janelaExterna;
+	private TimerVisual timerPartida;
 
 //Atributos da rede
 	private Interlocutor interlocutor;
@@ -41,14 +43,15 @@ public class Janela extends JFrame {
 	public Janela(String titulo, int largura, int altura) {
 		super(titulo);
 		configuraJanela(largura, altura);
-		
-		containerDosBotoes = criaContainerDosBotoes();
-		super.add(containerDosBotoes, BorderLayout.NORTH);
-		
+
 		jogo = new Xadrez();
-		xadrezGrafico = new XadrezGrafico(jogo);
+		
+		xadrezGrafico = new GerenciadorInterfaceGraficaXadrez(jogo);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
 		super.add(Logger.getInstance(), BorderLayout.SOUTH);
+
+		containerDosBotoes = criaContainerDosBotoes();
+		super.add(containerDosBotoes, BorderLayout.NORTH);
 	}
 	
 	private JPanel criaContainerDosBotoes() {
@@ -65,6 +68,9 @@ public class Janela extends JFrame {
 		
 		botaoMultiplayer = criaBotaoMultiplayer();
 		containerDosBotoes.add(botaoMultiplayer);
+		
+		timerPartida = new TimerVisual("Duração do jogo: ", jogo.getTimerPartida());
+		containerDosBotoes.add(timerPartida);
 		
 		return containerDosBotoes;
 	}
@@ -87,6 +93,7 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				jogo = new Xadrez();
 				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
+				timerPartida.trocaTimerLogico(jogo.getTimerPartida());
 			}
 		});
 		return botaoReiniciar;
@@ -106,6 +113,7 @@ public class Janela extends JFrame {
 				} catch (FileNotFoundException e1) {
 					System.out.println("Arquivo nao encontrado");
 				} catch (IOException e1) {
+					e1.printStackTrace();
 					System.out.println("Erro ao criar o object output stream");
 				}
 			}
@@ -124,6 +132,7 @@ public class Janela extends JFrame {
 				try {
 					jogo = jogo.carregaJogo("jogo_salvo.dat");
 					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
+					timerPartida.trocaTimerLogico(jogo.getTimerPartida());
 				} catch (FileNotFoundException e1) {
 					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");
 				} catch (IOException e1) {
@@ -131,7 +140,6 @@ public class Janela extends JFrame {
 				} catch (ClassNotFoundException e1) {
 					Logger.getInstance().logar("Erro ao deserializar a instância de xadrez que estava salva em disco!");
 				}
-			
 			}
 		});
 		return botaoCarregar;
@@ -150,7 +158,7 @@ public class Janela extends JFrame {
 				interlocutor = networkDialog.getInterlocutor();
 				if(interlocutor != null) {
 					jogo = new Xadrez();
-					xadrezGrafico.setInterlocutor(interlocutor);
+					xadrezGrafico.colocaOJogoEmRede(interlocutor);
 					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 					
 					if(interlocutor.getTipoInterlocutor().equals(TipoInterlocutor.CLIENTE)) {
