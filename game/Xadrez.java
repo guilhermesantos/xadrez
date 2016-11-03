@@ -164,11 +164,12 @@ public class Xadrez implements Serializable, Cloneable {
 		objectOutput.close();
 	}
 	
-	public Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {		
 		this.getTimerPartida().encerraTimer();
 		this.getTimerTurno().encerraTimer();
 		
 		Xadrez jogoCarregado;
+		
 		FileInputStream fileInput = new FileInputStream("jogo_salvo.dat");
 		ObjectInputStream objectInput = new ObjectInputStream(fileInput);
 		jogoCarregado = (Xadrez)objectInput.readObject();

@@ -6,19 +6,19 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class TimerVisual extends JPanel implements Observer {
+public class TimerGrafico extends JPanel implements Observer {
 	private static final long serialVersionUID = -2596813432724469961L;
 	
 	private TimerLogico timerLogico;
 	private JLabel labelTitulo;
 	private JLabel labelTimer;
 	
-	public TimerVisual(String titulo) {
+	public TimerGrafico(String titulo) {
 		timerLogico = new TimerLogico();
 		configuraTimer(titulo);
 	}
 	
-	public TimerVisual(String titulo, TimerLogico timer) {
+	public TimerGrafico(String titulo, TimerLogico timer) {
 		this.timerLogico = timer;
 		configuraTimer(titulo);
 	}
@@ -66,7 +66,11 @@ public class TimerVisual extends JPanel implements Observer {
 	}
 
 	public void trocaTimerLogico(TimerLogico timerLogico) {
+		System.out.println("Trocando timer logico");
 		this.timerLogico = timerLogico;
+		this.timerLogico.addObserver(this);
+		System.out.println("trocou timer logico");
 		atualizaLabelTimer();
+		System.out.println("atualizou label do timer");
 	}
 }

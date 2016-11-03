@@ -18,7 +18,7 @@ import game.Cor;
 import game.Xadrez;
 import network.Interlocutor;
 import network.TipoInterlocutor;
-import timer.TimerVisual;
+import timer.TimerGrafico;
 
 public class Janela extends JFrame {
 
@@ -34,8 +34,8 @@ public class Janela extends JFrame {
 	private JButton botaoMultiplayer;
 	private JButton botaoCarregar;
 	private Window janelaExterna;
-	private TimerVisual timerPartida;
-
+	private TimerGrafico timerPartida;
+	
 //Atributos da rede
 	private Interlocutor interlocutor;
 // ------------------------------------------------------//
@@ -69,7 +69,7 @@ public class Janela extends JFrame {
 		botaoMultiplayer = criaBotaoMultiplayer();
 		containerDosBotoes.add(botaoMultiplayer);
 		
-		timerPartida = new TimerVisual("Duração do jogo: ", jogo.getTimerPartida());
+		timerPartida = new TimerGrafico("Duração do jogo: ", jogo.getTimerPartida());
 		containerDosBotoes.add(timerPartida);
 		
 		return containerDosBotoes;

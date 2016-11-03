@@ -14,6 +14,7 @@ public class TimerLogico extends Observable implements Serializable {
 	}
 	
 	public void iniciaTimer() {
+		runnableTimer = new RunnableTimer();
 		new Thread(runnableTimer).start();
 	}
 	
