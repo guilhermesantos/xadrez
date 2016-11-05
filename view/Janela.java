@@ -33,7 +33,8 @@ public class Janela extends JFrame {
 	private JButton botaoMultiplayer;
 	private JButton botaoCarregar;
 	private Window janelaExterna;
-	private TimerGrafico timerPartida;
+	private static TimerGrafico timerPartida;
+	private static TimerGrafico timerTurno;
 	private JButton botaoConfigurar;
 	
 //Atributos da rede
@@ -78,6 +79,9 @@ public class Janela extends JFrame {
 		timerPartida = new TimerGrafico("Duração da partida: ");
 		containerDosBotoes.add(timerPartida);
 		
+		timerTurno = new TimerGrafico("Duração do turno: ");
+		containerDosBotoes.add(timerTurno);
+		
 		return containerDosBotoes;
 	}
 
@@ -99,6 +103,8 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				jogo = new Xadrez();
 				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
+				timerPartida.setTempo(jogo.getTempoPartida());
+				timerTurno.setTempo(jogo.getTempoTurno());
 			}
 		});
 		return botaoReiniciar;
@@ -115,6 +121,7 @@ public class Janela extends JFrame {
 				SalvarJogoDialog salvarJogoDialog = new SalvarJogoDialog(
 						janelaExterna, jogo);
 				jogo.setTempoPartida(timerPartida.getTempo());
+				jogo.setTempoTurno(timerTurno.getTempo());
 				salvarJogoDialog.setVisible(true);
 			}
 		});
@@ -141,6 +148,7 @@ public class Janela extends JFrame {
 	public void callbackCarregaJogo(Xadrez jogoCarregado) {
 		this.jogo = jogoCarregado;
 		timerPartida.setTempo(jogo.getTempoPartida());
+		timerTurno.setTempo(jogo.getTempoTurno());
 		xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 	}
 	
@@ -194,5 +202,21 @@ public class Janela extends JFrame {
 		
 		botaoMultiplayer.addActionListener(listenerQueFazAbrirONetworkDialog);
 		return botaoMultiplayer;
+	}
+
+	public static TimerGrafico getTimerPartida() {
+		return timerPartida;
+	}
+
+	public static void setTimerPartida(TimerGrafico timerPartida) {
+		Janela.timerPartida = timerPartida;
+	}
+
+	public static TimerGrafico getTimerTurno() {
+		return timerTurno;
+	}
+
+	public static void setTimerTurno(TimerGrafico timerTurno) {
+		Janela.timerTurno = timerTurno;
 	}
 }

@@ -104,7 +104,11 @@ public class CarregarJogoDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					jogoCarregado = Xadrez.carregaJogo(listaVisualDeJogos.getSelectedValue());
+					if(!listaVisualDeJogos.isSelectionEmpty()) {
+						jogoCarregado = Xadrez.carregaJogo(listaVisualDeJogos.getSelectedValue());
+						janela.callbackCarregaJogo(jogoCarregado);
+						dispose();
+					}
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e1) {
@@ -112,8 +116,6 @@ public class CarregarJogoDialog extends JDialog {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				janela.callbackCarregaJogo(jogoCarregado);
-				dispose();
 			}
 		};
 		return listener;

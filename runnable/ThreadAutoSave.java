@@ -26,6 +26,10 @@ public class ThreadAutoSave implements Runnable {
 	public static void setJogo(Xadrez jogo) {
 		jogoASalvar = jogo;
 	}
+
+	public static Xadrez getJogo() {
+		return jogoASalvar;
+	}
 	
 	public static void encerraAutoSave() {
 		autoSaveAtivado = false;

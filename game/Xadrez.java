@@ -17,7 +17,9 @@ import exceptions.JogoJaAcabouException;
 import exceptions.NaoEstaNaVezDoJogadorException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
+import runnable.ThreadAutoSave;
 import timer.Tempo;
+import view.Janela;
 
 public class Xadrez implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4332058372731129426L;
@@ -124,6 +126,13 @@ public class Xadrez implements Serializable, Cloneable {
 		}
 		corDoUltimoJogadorAAgir = corJogador;
 		movimentosValidos.clear();
+
+		System.out.println("Atualizando o jogo no autosave");
+		
+		//tempoPartida = Janela.getTimerPartida().getTempo();
+		tempoTurno = new Tempo();
+		Janela.getTimerTurno().setTempo(tempoTurno);
+		ThreadAutoSave.getInstance().setJogo(this);
 	}
 
 	private void alternaTurno() {
