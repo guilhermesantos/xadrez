@@ -10,7 +10,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultCaret;
 
 import game.Cor;
 import game.Xadrez;
@@ -52,10 +54,24 @@ public class Janela extends JFrame {
 		
 		xadrezGrafico = new GerenciadorInterfaceGraficaXadrez(jogo);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
-		super.add(Logger.getInstance(), BorderLayout.SOUTH);
-
+		
+		configuraLogger();
+		
 		containerDosBotoes = criaContainerDosBotoes();
 		super.add(containerDosBotoes, BorderLayout.NORTH);
+	}
+	
+	private void configuraLogger() {
+		JScrollPane painelLogger = new JScrollPane(Logger.getInstance());
+		Logger.getInstance().setColumns(40);
+		Logger.getInstance().setRows(4);
+		Logger.getInstance().setCaretPosition(Logger.getInstance().getText().length());
+		
+		//DefaultCaret caret = (DefaultCaret)(Logger.getInstance().getCaret());
+		//caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		//Logger.getInstance().setCaret(caret);
+		
+		super.add(painelLogger, BorderLayout.SOUTH);
 	}
 	
 	private JPanel criaContainerDosBotoes() {

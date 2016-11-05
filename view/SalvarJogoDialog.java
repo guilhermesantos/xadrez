@@ -80,6 +80,7 @@ public class SalvarJogoDialog extends JDialog {
 					System.out.println("Falhou ao salvar o jogo. Erro de IO");
 					e1.printStackTrace();
 				}
+				Logger.getInstance().logar("Jogo "+campoNomeJogo.getText()+" salvo com sucesso.");
 				dispose();
 			}
 		};
