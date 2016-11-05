@@ -64,7 +64,7 @@ public class Janela extends JFrame {
 	private void configuraLogger() {
 		JScrollPane painelLogger = new JScrollPane(Logger.getInstance());
 		Logger.getInstance().setColumns(40);
-		Logger.getInstance().setRows(4);
+		Logger.getInstance().setRows(3);
 		Logger.getInstance().setCaretPosition(Logger.getInstance().getText().length());
 		
 		//DefaultCaret caret = (DefaultCaret)(Logger.getInstance().getCaret());
@@ -121,6 +121,7 @@ public class Janela extends JFrame {
 				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 				timerPartida.setTempo(jogo.getTempoPartida());
 				timerTurno.setTempo(jogo.getTempoTurno());
+				Logger.getInstance().logar("Novo jogo iniciado.");
 			}
 		});
 		return botaoReiniciar;

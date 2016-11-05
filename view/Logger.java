@@ -1,8 +1,8 @@
 package view;
 
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 
-public class Logger extends JTextField {
+public class Logger extends JTextArea {
 	private static final long serialVersionUID = -7679534926254695936L;
 	
 	public static Logger getInstance() {
@@ -10,7 +10,7 @@ public class Logger extends JTextField {
 	}
 	
 	public void logar(String texto) {
-		setText(texto);
+		append(texto+"\n");
 	}
 	
 	private static class LoggerSingletonHolder {
