@@ -196,6 +196,12 @@ public class Janela extends JFrame {
 					Logger.getInstance().logar("Conectado ao jogador " + interlocutor.getNome());
 					botaoSalvar.setEnabled(false);
 					botaoCarregar.setEnabled(false);
+					botaoConfigurar.setEnabled(false);
+					timerPartida.setVisible(false);
+					timerPartida.encerraTimer();
+					timerTurno.setVisible(false);
+					timerTurno.encerraTimer();
+					ThreadAutoSave.encerraAutoSave();
 				}
 			}
 		};

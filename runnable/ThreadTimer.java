@@ -33,6 +33,7 @@ public class ThreadTimer extends Observable implements Runnable {
 			setChanged();
 			notifyObservers();
 		}
+		System.out.println("MATANDO TIMER!");
 	}
 
 	public Tempo getTempo() {
