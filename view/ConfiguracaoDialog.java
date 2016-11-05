@@ -57,7 +57,7 @@ public class ConfiguracaoDialog extends JDialog {
 	
 	private JPanel constroiPainelBotoes() {
 		JPanel painel = new JPanel();
-		botaoSair = new JButton("Sair");
+		botaoSair = new JButton("Ok");
 		
 		ActionListener listenerQueFechaODialog = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
