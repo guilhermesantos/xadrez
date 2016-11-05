@@ -1,5 +1,7 @@
 package network;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -32,14 +34,14 @@ public class ConectadorDeCliente extends Observable implements Runnable {
 		}
 		
 		try {
-			entrada = new ObjectInputStream(con.getInputStream());
+			entrada = new ObjectInputStream(new BufferedInputStream(con.getInputStream()));
 		} catch (IOException e) {
 			System.out.println("Nao conseguiu criar o input stream pro cliente");
 		}
 		System.out.println("Criou input stream do cliente");
 		
 		try {
-			saida = new ObjectOutputStream(con.getOutputStream());
+			saida = new ObjectOutputStream(new BufferedOutputStream(con.getOutputStream()));
 			saida.flush();
 		} catch (IOException e) {
 			System.out.println("Nao conseguiu criar o input stream pro servidor");

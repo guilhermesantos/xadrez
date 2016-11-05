@@ -60,9 +60,14 @@ public class GerenciadorInterfaceGraficaXadrez extends JPanel implements Observe
 	}
 	
 	public void substituiJogoEAtualizaGraficos(Xadrez jogo) {
+		System.out.println("substituindo o jogo");
 		this.jogo = jogo;
+		System.out.println("jogo substituido");
+		System.out.println("Jogo esta em rede? "+ jogoEstaEmRede());
 		this.corJogador = jogo.getCorDoUltimoJogadorAAgir().alternaCor();
+		System.out.println("vai atualizar o tabuleiro grafico");
 		tabuleiroGrafico.atualizaTabuleiroGraficoInteiro(jogo);
+		System.out.println("atualizou o tabuleiro grafico");
 	}
 	
 	@Override
@@ -108,6 +113,7 @@ public class GerenciadorInterfaceGraficaXadrez extends JPanel implements Observe
 	private class XadrezMouseListener implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			System.out.println("recebeu o clique");
 			Point coordenadasCasaClicada = tabuleiroGrafico.converteCoordenadasEmCasaDoTabuleiro(e);
 			
 			boolean casaClicadaEhUmMovimentoValido = jogo.getMovimentosValidos()
@@ -123,7 +129,6 @@ public class GerenciadorInterfaceGraficaXadrez extends JPanel implements Observe
 				Logger.getInstance().logar(jogo.getEstadoJogo().toString());
 				
 				if(jogoEstaEmRede()) {
-					System.out.println("Jogo está em rede");
 					interlocutor.escreveMensagem(new MensagemComJogo(jogo));
 				} else {
 					corJogador = corJogador.alternaCor();
@@ -144,8 +149,7 @@ public class GerenciadorInterfaceGraficaXadrez extends JPanel implements Observe
 					Logger.getInstance().logar("O jogo já terminou. Não há mais movimentos válidos.");
 				} catch (NaoEstaNaVezDoJogadorException e1) {
 					Logger.getInstance().logar("Não é a sua vez. Por favor, aguarde o movimento do outro jogador.");
-				} 
-			}
+				}			}
 		}
 
 		@Override

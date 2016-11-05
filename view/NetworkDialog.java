@@ -143,7 +143,6 @@ public class NetworkDialog extends JDialog implements Observer {
 	}
 	
 	private JPanel constroiContainerDosCamposDaConexao() {
-			
 			JPanel containerCampos = new JPanel(new FlowLayout());
 	
 			JLabel labelNomeJogador = new JLabel("Nome do jogador: ");

@@ -1,6 +1,7 @@
 package game;
 
 import java.awt.Point;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,7 +17,7 @@ import exceptions.JogoJaAcabouException;
 import exceptions.NaoEstaNaVezDoJogadorException;
 import exceptions.NaoHaMovimentosValidosException;
 import exceptions.PecaNaoPertenceAoJogadorException;
-import timer.TimerLogico;
+import timer.Tempo;
 
 public class Xadrez implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4332058372731129426L;
@@ -26,8 +27,8 @@ public class Xadrez implements Serializable, Cloneable {
 	private List<Point> movimentosValidos;
 	private Tabuleiro tabuleiro;
 	private Cor corDoUltimoJogadorAAgir;
-	private TimerLogico timerTurno;
-	private TimerLogico timerPartida;
+	private Tempo tempoPartida;
+	private Tempo tempoTurno;
 	
 	public Tabuleiro getTabuleiro() {
 		return tabuleiro;
@@ -51,12 +52,8 @@ public class Xadrez implements Serializable, Cloneable {
 		coordenadasPecaSelecionada = null;
 		movimentosValidos = new ArrayList<Point>();
 		corDoUltimoJogadorAAgir = Cor.PRETO;
-		
-		timerPartida = new TimerLogico();
-		timerPartida.iniciaTimer();
-		
-		timerTurno = new TimerLogico();
-		timerTurno.iniciaTimer();
+		tempoPartida = new Tempo();
+		tempoTurno = new Tempo();
 	}
 	
 	public List<Point> selecionaPeca(Cor corJogador, Point coordenadas) throws PecaNaoPertenceAoJogadorException, 
@@ -164,31 +161,67 @@ public class Xadrez implements Serializable, Cloneable {
 		objectOutput.close();
 	}
 	
-	public Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {		
-		this.getTimerPartida().encerraTimer();
-		this.getTimerTurno().encerraTimer();
-		
+	public static Xadrez carregaJogo(String nomeArquivo) throws FileNotFoundException, IOException, ClassNotFoundException {		
 		Xadrez jogoCarregado;
-		
-		FileInputStream fileInput = new FileInputStream("jogo_salvo.dat");
+		FileInputStream fileInput = new FileInputStream(nomeArquivo);
 		ObjectInputStream objectInput = new ObjectInputStream(fileInput);
 		jogoCarregado = (Xadrez)objectInput.readObject();
 		objectInput.close();
 		
-		jogoCarregado.getTimerPartida().iniciaTimer();
-		jogoCarregado.getTimerTurno().iniciaTimer();
 		return jogoCarregado;
 	}
-
+	
+	public static void apagaJogosalvo(String nomeArquivo) throws FileNotFoundException {
+		System.out.println("Apagando " + nomeArquivo);
+		List<String> jogosEncontrados = buscaJogosSalvos();
+		if(jogosEncontrados.contains(nomeArquivo)) {
+			System.out.println("Encontrou" + nomeArquivo);
+			new File("./"+nomeArquivo).delete();
+		} else {
+			throw new FileNotFoundException();
+		}
+	}
+	
+	public static List<String> buscaJogosSalvos() {
+		List<String> jogosEncontrados = new ArrayList<String>();
+		
+		File arquivos[] = new File(".").listFiles();
+		for(File arquivoEncontrado : arquivos) {
+			if(arquivoEncontrado.getName().contains(".dat")) {
+				System.out.println("Jogo encontrado: " + arquivoEncontrado.getName());
+				jogosEncontrados.add(arquivoEncontrado.getName());
+			}
+		}
+		return jogosEncontrados;
+	}
+	
+	public static String[] buscaJogosSalvosComoArray() {
+		List<String> jogosSalvos = buscaJogosSalvos();
+		String jogosArray[] = new String[jogosSalvos.size()];
+		for(int i = 0; i < jogosSalvos.size(); i++) {
+			jogosArray[i] = jogosSalvos.get(i);
+		}
+		return jogosArray;
+	}
+	
 	public Cor getCorDoUltimoJogadorAAgir() {
 		return corDoUltimoJogadorAAgir;
 	}
 
-	public TimerLogico getTimerTurno() {
-		return timerTurno;
+	public Tempo getTempoPartida() {
+		return tempoPartida;
 	}
 
-	public TimerLogico getTimerPartida() {
-		return timerPartida;
+	public void setTempoPartida(Tempo tempoPartida) {
+		this.tempoPartida = tempoPartida;
 	}
+
+	public Tempo getTempoTurno() {
+		return tempoTurno;
+	}
+
+	public void setTempoTurno(Tempo tempoTurno) {
+		this.tempoTurno = tempoTurno;
+	}
+
 }

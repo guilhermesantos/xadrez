@@ -6,8 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,6 +16,7 @@ import game.Cor;
 import game.Xadrez;
 import network.Interlocutor;
 import network.TipoInterlocutor;
+import runnable.ThreadAutoSave;
 import timer.TimerGrafico;
 
 public class Janela extends JFrame {
@@ -35,6 +34,7 @@ public class Janela extends JFrame {
 	private JButton botaoCarregar;
 	private Window janelaExterna;
 	private TimerGrafico timerPartida;
+	private JButton botaoConfigurar;
 	
 //Atributos da rede
 	private Interlocutor interlocutor;
@@ -45,6 +45,9 @@ public class Janela extends JFrame {
 		configuraJanela(largura, altura);
 
 		jogo = new Xadrez();
+
+		ThreadAutoSave.getInstance().setJogo(jogo);
+		new Thread(ThreadAutoSave.getInstance()).start();
 		
 		xadrezGrafico = new GerenciadorInterfaceGraficaXadrez(jogo);
 		super.add(xadrezGrafico, BorderLayout.CENTER);
@@ -66,10 +69,13 @@ public class Janela extends JFrame {
 		botaoCarregar = criaBotaoCarregar();
 		containerDosBotoes.add(botaoCarregar);
 		
+		botaoConfigurar = criaBotaoConfigurar();
+		containerDosBotoes.add(botaoConfigurar);
+		
 		botaoMultiplayer = criaBotaoMultiplayer();
 		containerDosBotoes.add(botaoMultiplayer);
 		
-		timerPartida = new TimerGrafico("Duração do jogo: ", jogo.getTimerPartida());
+		timerPartida = new TimerGrafico("Duração da partida: ");
 		containerDosBotoes.add(timerPartida);
 		
 		return containerDosBotoes;
@@ -93,7 +99,6 @@ public class Janela extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				jogo = new Xadrez();
 				xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
-				timerPartida.trocaTimerLogico(jogo.getTimerPartida());
 			}
 		});
 		return botaoReiniciar;
@@ -107,15 +112,10 @@ public class Janela extends JFrame {
 		new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					jogo.salvaJogo("jogo_salvo.dat");
-					Logger.getInstance().logar("Jogo salvo.");
-				} catch (FileNotFoundException e1) {
-					System.out.println("Arquivo nao encontrado");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					System.out.println("Erro ao criar o object output stream");
-				}
+				SalvarJogoDialog salvarJogoDialog = new SalvarJogoDialog(
+						janelaExterna, jogo);
+				jogo.setTempoPartida(timerPartida.getTempo());
+				salvarJogoDialog.setVisible(true);
 			}
 		});
 		return botaoSalvar;
@@ -125,28 +125,43 @@ public class Janela extends JFrame {
 		JButton botaoCarregar = new JButton("Carregar");
 		botaoCarregar.setBackground(Color.WHITE);
 		
+		Janela gamb = this;
 		botaoCarregar.addActionListener(
 		new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					jogo = jogo.carregaJogo("jogo_salvo.dat");
-					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
-					timerPartida.trocaTimerLogico(jogo.getTimerPartida());
-				} catch (FileNotFoundException e1) {
-					Logger.getInstance().logar("Nao encontrou o arquivo jogo_salvo.dat");
-				} catch (IOException e1) {
-					Logger.getInstance().logar("IOException. :(");
-				} catch (ClassNotFoundException e1) {
-					Logger.getInstance().logar("Erro ao deserializar a instância de xadrez que estava salva em disco!");
-				}
+				CarregarJogoDialog carregarJogoDialog = 
+						new CarregarJogoDialog(janelaExterna, gamb);
+				carregarJogoDialog.setVisible(true);
 			}
 		});
 		return botaoCarregar;
 	}
 	
+	public void callbackCarregaJogo(Xadrez jogoCarregado) {
+		this.jogo = jogoCarregado;
+		timerPartida.setTempo(jogo.getTempoPartida());
+		xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
+	}
+	
+	private JButton criaBotaoConfigurar() {
+		JButton botaoConfigurar = new JButton("Configurar");
+		ConfiguracaoDialog configuracaoDialog = new ConfiguracaoDialog(janelaExterna);
+		
+		ActionListener listenerQueFazAbrirOConfiguracaoDialog = 
+				new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						configuracaoDialog.setVisible(true);
+					}
+		};
+		botaoConfigurar.addActionListener(listenerQueFazAbrirOConfiguracaoDialog);
+		botaoConfigurar.setBackground(Color.WHITE);
+		return botaoConfigurar;
+	}
+	
 	private JButton criaBotaoMultiplayer() {
-		JButton botaoMultiplayer = new JButton("Multiplayer");
+		JButton botaoMultiplayer = new JButton("Jogo em rede");
 		botaoMultiplayer.setBackground(Color.WHITE);
 		NetworkDialog networkDialog = new NetworkDialog(janelaExterna);
 		
@@ -158,6 +173,7 @@ public class Janela extends JFrame {
 				interlocutor = networkDialog.getInterlocutor();
 				if(interlocutor != null) {
 					jogo = new Xadrez();
+					
 					xadrezGrafico.colocaOJogoEmRede(interlocutor);
 					xadrezGrafico.substituiJogoEAtualizaGraficos(jogo);
 					
@@ -170,6 +186,8 @@ public class Janela extends JFrame {
 					}
 					
 					Logger.getInstance().logar("Conectado ao jogador " + interlocutor.getNome());
+					botaoSalvar.setEnabled(false);
+					botaoCarregar.setEnabled(false);
 				}
 			}
 		};

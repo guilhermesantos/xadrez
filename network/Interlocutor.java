@@ -52,13 +52,15 @@ public class Interlocutor extends Observable {
 
 	public void escreveMensagem(Mensagem mensagem) {
 		try {
+			System.out.println("Vai escrever mensagem no output stream");
 			saida.writeObject(mensagem);
+			System.out.println("Escreveu. vai dar flush");
 			saida.flush();
+			System.out.println("Deu flush");
 		} catch (IOException e) {
 			System.out.println("Erro ao enviar mensagem para o interlocutor");
 		}
 	}
-
 	
 	public void paraDeEscutarMensagens() {
 		try {

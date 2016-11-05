@@ -6,26 +6,29 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import runnable.ThreadTimer;
+
 public class TimerGrafico extends JPanel implements Observer {
 	private static final long serialVersionUID = -2596813432724469961L;
 	
-	private TimerLogico timerLogico;
 	private JLabel labelTitulo;
 	private JLabel labelTimer;
+	private ThreadTimer threadTimer;
 	
 	public TimerGrafico(String titulo) {
-		timerLogico = new TimerLogico();
+		threadTimer = new ThreadTimer();
 		configuraTimer(titulo);
 	}
 	
-	public TimerGrafico(String titulo, TimerLogico timer) {
-		this.timerLogico = timer;
+	public TimerGrafico(String titulo, Tempo tempo) {
+		threadTimer = new ThreadTimer(tempo);
 		configuraTimer(titulo);
 	}
 	
 	private void configuraTimer(String titulo) {
-		timerLogico.addObserver(this);
-
+		threadTimer.addObserver(this);
+		new Thread(threadTimer).start();
+		
 		this.labelTitulo = new JLabel();
 		this.add(labelTitulo);
 		this.labelTitulo.setText(titulo);
@@ -34,26 +37,13 @@ public class TimerGrafico extends JPanel implements Observer {
 		this.add(labelTimer);
 		atualizaLabelTimer();
 	}
-	
-	public void iniciaTimerVisual() {
-		timerLogico.iniciaTimer();
-	}
-	
-	public void pausaTimerVisual() {
-		timerLogico.pausaTimerLogico();
-	}
-	
-	public void continuaTimerVisual() {
-		timerLogico.continuaTimerLogico();
-	}
-	
-	public void zeraTimerVisual() {
-		timerLogico.zeraTimerLogico();
-		atualizaLabelTimer();
-	}
 
+	public void encerraTimer() {
+		threadTimer.encerraTimer();
+	}
+	
 	public void atualizaLabelTimer() {
-		labelTimer.setText(timerLogico.getTempoFormatado());
+		labelTimer.setText(threadTimer.getTempo().toString());
 	}
 
 	@Override
@@ -61,16 +51,12 @@ public class TimerGrafico extends JPanel implements Observer {
 		atualizaLabelTimer();
 	}
 
-	public TimerLogico getTimerLogico() {
-		return timerLogico;
+	public void setTempo(Tempo tempo) {
+		threadTimer.setTempo(tempo);
+		atualizaLabelTimer();
 	}
 
-	public void trocaTimerLogico(TimerLogico timerLogico) {
-		System.out.println("Trocando timer logico");
-		this.timerLogico = timerLogico;
-		this.timerLogico.addObserver(this);
-		System.out.println("trocou timer logico");
-		atualizaLabelTimer();
-		System.out.println("atualizou label do timer");
+	public Tempo getTempo() {
+		return threadTimer.getTempo();
 	}
 }

@@ -1,5 +1,7 @@
 package network;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -42,7 +44,7 @@ public class ReceptorDeConexoes extends Observable implements Runnable {
 		
 		ObjectOutputStream saida = null;
 		try {
-			saida = new ObjectOutputStream(con.getOutputStream());
+			saida = new ObjectOutputStream(new BufferedOutputStream(con.getOutputStream()));
 			saida.flush();
 		} catch (IOException e) {
 			System.out.println("Erro ao criar o canal de saida do servidor local");
@@ -51,7 +53,7 @@ public class ReceptorDeConexoes extends Observable implements Runnable {
 		
 		ObjectInputStream entrada = null;
 		try {
-			entrada = new ObjectInputStream(con.getInputStream());
+			entrada = new ObjectInputStream(new BufferedInputStream(con.getInputStream()));
 		} catch (IOException e) {
 			System.out.println("Erro ao criar o canal de entrada do servidor local");
 		}
